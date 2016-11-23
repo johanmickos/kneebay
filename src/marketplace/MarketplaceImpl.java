@@ -5,10 +5,15 @@ import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Marketplace;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Logger;
 
-public class MarketplaceImpl implements Marketplace {
+public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace {
     private static final Logger log = Logger.getLogger(MarketplaceImpl.class.getName());
+
+    protected MarketplaceImpl() throws RemoteException {
+        super();
+    }
 
     @Override
     public void register(Account account) {
