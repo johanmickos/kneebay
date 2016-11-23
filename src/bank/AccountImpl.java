@@ -48,4 +48,9 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     public synchronized float getBalance() throws RemoteException {
         return balance;
     }
+
+    @Override
+    public synchronized String getName() throws RemoteException {
+        return name;
+    }
 }

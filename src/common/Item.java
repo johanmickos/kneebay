@@ -7,6 +7,7 @@ public class Item {
     private String name;
     private Double price;
     private Category category;
+    private String seller;
 
     public String getId() {
         return id;
@@ -34,6 +35,16 @@ public class Item {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String getSeller()
+    {
+        return seller;
+    }
+
+    public void setSeller(String seller)
+    {
+        this.seller = seller;
     }
 
     public enum Category {
@@ -65,6 +76,10 @@ public class Item {
         }
         public Builder category(Category category) {
             instance.category = category;
+            return this;
+        }
+        public Builder seller(String seller) {
+            instance.seller = seller;
             return this;
         }
         public Item build() {

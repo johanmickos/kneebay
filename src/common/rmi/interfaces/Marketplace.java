@@ -1,6 +1,7 @@
 package common.rmi.interfaces;
 
 import common.Item;
+import common.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -8,14 +9,14 @@ import java.rmi.RemoteException;
 public interface Marketplace extends Remote {
     String DEFAULT_MARKETPLACE = "kneeBay";
 
-    void register(Account account) throws RemoteException;
-    void unregister(Account account) throws RemoteException;
+    void register(String username, String password, Account account, MarketClient client) throws RemoteException;
+    void unregister(String username) throws RemoteException;
 
-    void addItem(Item item) throws RemoteException;
-    void removeItem(Item item) throws RemoteException; // Should verify ownership
+    void addItem(Item item, MarketClient client) throws RemoteException;
+    void removeItem(Item item, MarketClient client) throws RemoteException; // Should verify ownership
     void addWish(Item.Category type) throws RemoteException;
     void removeWish(Item.Category type) throws RemoteException;
-    void buyItem(Item item) throws RemoteException;
+    void buyItem(Item item, MarketClient buyer) throws RemoteException;
 
         /*
         Develop a client-server distributed application in Java for trading things (items)
