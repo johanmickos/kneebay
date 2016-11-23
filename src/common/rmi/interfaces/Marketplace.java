@@ -6,13 +6,15 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Marketplace extends Remote {
+    String DEFAULT_MARKETPLACE = "kneeBay";
+
     void register(Account account) throws RemoteException;
     void unregister(Account account) throws RemoteException;
 
     void addItem(Item item) throws RemoteException;
     void removeItem(Item item) throws RemoteException; // Should verify ownership
-    void addWish(Item.ItemType type) throws RemoteException;
-    void removeWish(Item.ItemType type) throws RemoteException;
+    void addWish(Item.Category type) throws RemoteException;
+    void removeWish(Item.Category type) throws RemoteException;
     void buyItem(Item item) throws RemoteException;
 
         /*

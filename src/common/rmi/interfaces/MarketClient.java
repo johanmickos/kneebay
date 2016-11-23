@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface MarketClient extends Remote {
 
     // Notifications
-    void onWishNotify(Item.ItemType type) throws RemoteException;
+    void onWishNotify(Item.Category type) throws RemoteException;
     void onItemSold(Item item) throws RemoteException;
     void onItemPurchased(Item item) throws RemoteException;
     void onLackOfFunds() throws RemoteException;

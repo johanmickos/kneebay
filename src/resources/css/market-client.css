@@ -1,0 +1,5 @@
+.wide-btn {
+    -fx-width: 120px;
+    -fx-pref-width: 120px;
+    -fx-fill: #3a810c;
+}

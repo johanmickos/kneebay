@@ -17,7 +17,7 @@ public class MarketClientImpl extends UnicastRemoteObject implements MarketClien
     }
 
     @Override
-    public void onWishNotify(Item.ItemType type) throws RemoteException {
+    public void onWishNotify(Item.Category type) throws RemoteException {
 
     }
 

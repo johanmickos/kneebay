@@ -36,12 +36,12 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public void addWish(Item.ItemType type) throws RemoteException {
+    public void addWish(Item.Category type) throws RemoteException {
 
     }
 
     @Override
-    public void removeWish(Item.ItemType type) throws RemoteException {
+    public void removeWish(Item.Category type) throws RemoteException {
 
     }
 
