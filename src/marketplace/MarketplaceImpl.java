@@ -1,5 +1,10 @@
 package marketplace;
 
+import common.Item;
+import common.rmi.interfaces.Account;
+import common.rmi.interfaces.Marketplace;
+
+import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
 public class MarketplaceImpl implements Marketplace {
@@ -14,4 +19,30 @@ public class MarketplaceImpl implements Marketplace {
     public void unregister(Account account) {
         log.info("Unregistering account: " + account.toString());
     }
+
+    @Override
+    public void addItem(Item item) throws RemoteException {
+
+    }
+
+    @Override
+    public void removeItem(Item item) throws RemoteException {
+
+    }
+
+    @Override
+    public void addWish(Item.ItemType type) throws RemoteException {
+
+    }
+
+    @Override
+    public void removeWish(Item.ItemType type) throws RemoteException {
+
+    }
+
+    @Override
+    public void buyItem(Item item) throws RemoteException {
+
+    }
+
 }

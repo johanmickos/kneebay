@@ -1,4 +1,6 @@
-package example;
+package common.rmi.interfaces;
+
+import bank.RejectedException;
 
 import java.io.Serializable;
 import java.rmi.Remote;

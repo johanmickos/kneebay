@@ -1,4 +1,7 @@
-package example;
+package bank;
+
+import common.rmi.interfaces.Account;
+import common.rmi.interfaces.Bank;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +10,9 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
 
+// TODO Safe delete this, not needed for Marketplace impl.
 public class Client {
-    private static final String USAGE = "java bankrmi.example.Client <bank_url>";
+    private static final String USAGE = "java bankrmi.bank.Client <bank_url>";
     private static final String DEFAULT_BANK_NAME = "Nordea";
     Account account;
     Bank bankobj;
@@ -144,7 +148,7 @@ public class Client {
                 return;
         }
 
-        // all further commands require a example.Account reference
+        // all further commands require a common.rmi.interfaces.Account reference
         Account acc = bankobj.getAccount(userName);
         if (acc == null) {
             System.out.println("No account for " + userName);

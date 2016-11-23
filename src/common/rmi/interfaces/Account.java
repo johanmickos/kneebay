@@ -1,4 +1,6 @@
-package example;
+package common.rmi.interfaces;
+
+import bank.RejectedException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -1,4 +1,7 @@
-package example;
+package bank;
+
+import common.rmi.interfaces.Account;
+import common.rmi.interfaces.Bank;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -25,13 +28,13 @@ public class BankImpl extends UnicastRemoteObject implements Bank {
                                                                RejectedException {
         AccountImpl account = (AccountImpl) accounts.get(name);
         if (account != null) {
-            System.out.println("example.Account [" + name + "] exists!!!");
-            throw new RejectedException("Rejected: se.kth.id2212.ex2.example.Bank: " + bankName
-                                        + " example.Account for: " + name + " already exists: " + account);
+            System.out.println("common.rmi.interfaces.Account [" + name + "] exists!!!");
+            throw new RejectedException("Rejected: se.kth.id2212.ex2.common.rmi.interfaces.Bank: " + bankName
+                                        + " common.rmi.interfaces.Account for: " + name + " already exists: " + account);
         }
         account = new AccountImpl(name);
         accounts.put(name, account);
-        System.out.println("se.kth.id2212.ex2.example.Bank: " + bankName + " example.Account: " + account
+        System.out.println("se.kth.id2212.ex2.common.rmi.interfaces.Bank: " + bankName + " common.rmi.interfaces.Account: " + account
                            + " has been created for " + name);
         return account;
     }
@@ -47,7 +50,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank {
             return false;
         }
         accounts.remove(name);
-        System.out.println("se.kth.id2212.ex2.example.Bank: " + bankName + " example.Account for " + name
+        System.out.println("se.kth.id2212.ex2.common.rmi.interfaces.Bank: " + bankName + " common.rmi.interfaces.Account for " + name
                            + " has been deleted");
         return true;
     }

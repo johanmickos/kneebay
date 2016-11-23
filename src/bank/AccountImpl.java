@@ -1,4 +1,6 @@
-package example;
+package bank;
+
+import common.rmi.interfaces.Account;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -20,10 +22,10 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     public synchronized void deposit(float value) throws RemoteException,
             RejectedException {
         if (value < 0) {
-            throw new RejectedException("Rejected: example.Account " + name + ": Illegal value: " + value);
+            throw new RejectedException("Rejected: common.rmi.interfaces.Account " + name + ": Illegal value: " + value);
         }
         balance += value;
-        System.out.println("Transaction: example.Account " + name + ": deposit: $" + value + ", balance: $"
+        System.out.println("Transaction: common.rmi.interfaces.Account " + name + ": deposit: $" + value + ", balance: $"
                 + balance);
     }
 
@@ -31,14 +33,14 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     public synchronized void withdraw(float value) throws RemoteException,
             RejectedException {
         if (value < 0) {
-            throw new RejectedException("Rejected: example.Account " + name + ": Illegal value: " + value);
+            throw new RejectedException("Rejected: common.rmi.interfaces.Account " + name + ": Illegal value: " + value);
         }
         if ((balance - value) < 0) {
-            throw new RejectedException("Rejected: example.Account " + name
+            throw new RejectedException("Rejected: common.rmi.interfaces.Account " + name
                     + ": Negative balance on withdraw: " + (balance - value));
         }
         balance -= value;
-        System.out.println("Transaction: example.Account " + name + ": withdraw: $" + value + ", balance: $"
+        System.out.println("Transaction: common.rmi.interfaces.Account " + name + ": withdraw: $" + value + ", balance: $"
                 + balance);
     }
 

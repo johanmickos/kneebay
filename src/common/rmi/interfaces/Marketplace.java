@@ -1,11 +1,21 @@
-package marketplace;
+package common.rmi.interfaces;
 
-import java.util.logging.Logger;
+import common.Item;
 
-public class MarketServer {
-    private static final Logger log = Logger.getLogger(MarketServer.class.getName());
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-    /*
+public interface Marketplace extends Remote {
+    void register(Account account) throws RemoteException;
+    void unregister(Account account) throws RemoteException;
+
+    void addItem(Item item) throws RemoteException;
+    void removeItem(Item item) throws RemoteException; // Should verify ownership
+    void addWish(Item.ItemType type) throws RemoteException;
+    void removeWish(Item.ItemType type) throws RemoteException;
+    void buyItem(Item item) throws RemoteException;
+
+        /*
         Develop a client-server distributed application in Java for trading things (items)
         on a networked marketplace. Clients (traders) and a server (marketplace) communicate
         using Remote Method Invocations (implemented with Java RMI or Java IDL).
