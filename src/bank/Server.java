@@ -5,9 +5,12 @@ import common.rmi.interfaces.Bank;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.logging.Logger;
 
 public class Server {
-    private static final String USAGE = "java bankrmi.bank.Server <bank_rmi_url>";
+    private static final Logger log = Logger.getLogger(Server.class.getName());
+
+    private static final String USAGE = "bank.Server <bank_rmi_url>";
     private static final String BANK = "Nordea";
 
     public Server(String bankName) {
@@ -15,10 +18,10 @@ public class Server {
             Bank bankobj = new BankImpl(bankName);
             // Register the newly created object at rmiregistry.
             try {
-                System.out.println("Getting registry");
+                log.info("Getting registry");
                 LocateRegistry.getRegistry(1099).list();
             } catch (RemoteException e) {
-                System.out.println("Creating registry");
+                log.info("Creating registry");
                 LocateRegistry.createRegistry(1099);
             }
             Naming.rebind(bankName, bankobj);

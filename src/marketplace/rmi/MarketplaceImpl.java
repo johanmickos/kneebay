@@ -1,4 +1,4 @@
-package marketplace;
+package marketplace.rmi;
 
 import common.Item;
 import common.rmi.interfaces.Account;

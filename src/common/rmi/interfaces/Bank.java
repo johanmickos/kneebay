@@ -7,9 +7,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Bank extends Remote, Serializable {
+    String DEFAULT_BANK = "Nordea";
 
-    public Account newAccount(String name) throws RemoteException, RejectedException;
-    public Account getAccount(String name) throws RemoteException;
-    public boolean deleteAccount(String name) throws RemoteException;
-    public String[] listAccounts() throws RemoteException;
+    Account newAccount(String name) throws RemoteException, RejectedException;
+    Account getAccount(String name) throws RemoteException;
+    boolean deleteAccount(String name) throws RemoteException;
+    String[] listAccounts() throws RemoteException;
 }

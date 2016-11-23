@@ -1,4 +1,4 @@
-package marketplace;
+package marketplace.rmi;
 
 import common.Item;
 import common.rmi.interfaces.MarketClient;
@@ -9,8 +9,11 @@ import java.util.Collection;
 
 public class MarketClientImpl extends UnicastRemoteObject implements MarketClient {
 
-    protected MarketClientImpl() throws RemoteException {
+    private final String username;
+
+    public MarketClientImpl(String username) throws RemoteException {
         super();
+        this.username = username;
     }
 
     @Override
