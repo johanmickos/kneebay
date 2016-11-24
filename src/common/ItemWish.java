@@ -1,6 +1,8 @@
 package common;
 
-public class ItemWish
+import java.io.Serializable;
+
+public class ItemWish implements Serializable
 {
     private Item.Category type;
     private float maxAmount;
