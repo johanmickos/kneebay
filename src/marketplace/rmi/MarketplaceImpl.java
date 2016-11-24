@@ -195,7 +195,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         {
             float itemPrice = item.getPrice();
 
-            seller = this.userRepository.getUser(username);
+            seller = this.userRepository.getUser(item.getSeller());
             sellerClient = this.clientRepository.getClient(item.getSeller());
 
             buyer = this.userRepository.getUser(username);
