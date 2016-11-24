@@ -3,6 +3,7 @@ package marketplace.repository;
 import common.User;
 import common.rmi.interfaces.Account;
 import marketplace.database.mockDB;
+import marketplace.repository.exceptions.NotFoundException;
 
 public class UserRepository implements IUserRepository
 {
@@ -25,7 +26,7 @@ public class UserRepository implements IUserRepository
         return mockDB.users.stream().filter(u -> u.getName().equals(username)).count() == 0;
     }
 
-    public User getUser(String username)
+    public User getUser(String username) throws NotFoundException
     {
         User user = null;
 
@@ -37,6 +38,9 @@ public class UserRepository implements IUserRepository
                 break;
             }
         }
+
+        if(user == null)
+            throw new NotFoundException("User not found for " + username);
 
         return user;
     }

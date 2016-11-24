@@ -143,9 +143,9 @@ public class MarketClientController implements Initializable {
     public void onFetchUpdates(ActionEvent actionEvent) {
         // TODO This is just a mockup for now
         Collection<Item> updates = new ArrayList<>();
-        updates.add(Item.builder().name("Nikon X80").category(Item.Category.Camera).price(829.99).build());
-        updates.add(Item.builder().name("Giant Sofa").category(Item.Category.Furniture).price(1200.20).build());
-        updates.add(Item.builder().name("Jar of Bees").category(Item.Category.Miscellaneaous).price(8.99).build());
+        updates.add(Item.builder().name("Nikon X80").category(Item.Category.Camera).price(829).build());
+        updates.add(Item.builder().name("Giant Sofa").category(Item.Category.Furniture).price(1200).build());
+        updates.add(Item.builder().name("Jar of Bees").category(Item.Category.Miscellaneaous).price(9).build());
         setMarketplaceTable(updates);
     }
 

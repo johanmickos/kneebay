@@ -5,7 +5,7 @@ import java.util.UUID;
 public class Item {
     private String id;
     private String name;
-    private Double price;
+    private float price;
     private Category category;
     private String seller;
 
@@ -21,11 +21,11 @@ public class Item {
         this.name = name;
     }
 
-    public Double getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -70,7 +70,7 @@ public class Item {
             instance.name = name;
             return this;
         }
-        public Builder price(Double price) {
+        public Builder price(float price) {
             instance.price = price;
             return this;
         }

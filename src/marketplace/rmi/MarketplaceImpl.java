@@ -1,11 +1,13 @@
 package marketplace.rmi;
 
 import common.Item;
+import common.User;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.repository.*;
+import marketplace.repository.exceptions.NotFoundException;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -97,8 +99,16 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         }
         else
         {
-            MarketClient client = this.clientRepository.getClient(username);
-            client.onException("You don't have the authority to remove this item!");
+            try
+            {
+                MarketClient client = this.clientRepository.getClient(username);
+                client.onException("You don't have the authority to remove this item!");
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
             return;
         }
 
@@ -118,12 +128,44 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     @Override
     public synchronized void buyItem(Item item, String username) throws RemoteException
     {
-        Double itemPrice = item.getPrice();
+        User seller;
+        MarketClient sellerClient;
+        User buyer;
+        MarketClient buyerClient = null;
 
-        MarketClient seller = this.clientRepository.getClient(item.getSeller());
-        MarketClient buyer = this.clientRepository.getClient(username);
+        try
+        {
+            float itemPrice = item.getPrice();
 
-        
+            seller = this.userRepository.getUser(username);
+            sellerClient = this.clientRepository.getClient(item.getSeller());
+
+            buyer = this.userRepository.getUser(username);
+            buyerClient = this.clientRepository.getClient(username);
+
+            if(buyer.getBankAccount().getBalance() >= itemPrice)
+            {
+                buyer.getBankAccount().withdraw(itemPrice);
+                seller.getBankAccount().deposit(itemPrice);
+                buyerClient.onItemPurchased(item);
+                sellerClient.onItemSold(item);
+                this.itemRepository.removeItem(item);
+                updateMarketplaceForAllClients();
+            }
+            else
+            {
+                buyerClient.onLackOfFunds();
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            if(buyerClient != null)
+            {
+                buyerClient.onException(ex);
+            }
+        }
 
     }
 

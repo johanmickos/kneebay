@@ -9,7 +9,7 @@ public class ItemModel {
     private final SimpleDoubleProperty price;
     private final SimpleObjectProperty<Item.Category> category;
 
-    public ItemModel(String id, String name, Double price, Item.Category category) {
+    public ItemModel(String id, String name, float price, Item.Category category) {
         this.id = new SimpleStringProperty(id);
         this.name = new SimpleStringProperty(name);
         this.price = new SimpleDoubleProperty(price);
