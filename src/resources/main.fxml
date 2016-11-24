@@ -14,7 +14,6 @@
             <ToggleButton mnemonicParsing="false" text="Register" styleClass="wide-btn" fx:id="registerButton" onAction="#onToggleRegistration"/>
             <Button mnemonicParsing="false" text="New Item" onAction="#onNewItem"/>
             <Button mnemonicParsing="false" text="New Wish" onAction="#onNewWish"/>
-            <Button mnemonicParsing="false" text="Fetch Updates" onAction="#onFetchUpdates"/>
         </ToolBar>
     </top>
     <right>

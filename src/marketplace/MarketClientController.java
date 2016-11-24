@@ -30,7 +30,6 @@ import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -260,16 +259,6 @@ public class MarketClientController implements Initializable {
         }
     }
 
-    public void onFetchUpdates(ActionEvent actionEvent) {
-        // TODO This is just a mockup for now
-        Collection<Item> updates = new ArrayList<>();
-        updates.add(Item.builder().name("Nikon X80").category(Item.Category.Camera).price(829).build());
-        updates.add(Item.builder().name("Giant Sofa").category(Item.Category.Furniture).price(1200).build());
-        updates.add(Item.builder().name("Jar of Bees").category(Item.Category.Miscellaneaous).price(9).build());
-        updateMarketplace(updates);
-    }
-
-
     private ObservableList<ItemModel> generateItemModels(Collection<Item> items) {
         ObservableList<ItemModel> data = FXCollections.observableArrayList();
         for (Item it : items) {
@@ -307,7 +296,6 @@ public class MarketClientController implements Initializable {
         Platform.runLater(() -> wishList.getItems().removeIf(o -> {
             String str = o.toString();
             float max = Float.valueOf(str.substring(str.indexOf("(max: ")+5,str.indexOf(")")));
-            log.info("Comparing max: " + max);
             return str.startsWith(item.getCategory().name()) && max >= item.getPrice();
         }));
     }
