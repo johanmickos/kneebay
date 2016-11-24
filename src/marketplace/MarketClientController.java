@@ -124,6 +124,7 @@ public class MarketClientController implements Initializable {
                     .price(itemModel.getPrice())
                     .id(itemModel.getId())
                     .category(itemModel.getCategory())
+                    .seller(itemModel.getSeller())
                     .build();
             marketplace.buyItem(clone, username);
             logArea.appendText("You purchased the item '" + itemModel.getName() + "' for $" + itemModel.getPrice());
@@ -211,6 +212,7 @@ public class MarketClientController implements Initializable {
                     .name(newItemTitle.getText())
                     .category((Item.Category) categoryChoice.getValue())
                     .price(Float.parseFloat(newItemPrice.getText()))
+                    .seller(username)
                     .build();
             try {
                 marketplace.addItem(newItem);
@@ -246,7 +248,7 @@ public class MarketClientController implements Initializable {
     private ObservableList<ItemModel> generateItemModels(Collection<Item> items) {
         ObservableList<ItemModel> data = FXCollections.observableArrayList();
         for (Item it : items) {
-            data.add(new ItemModel(it.getId(), it.getName(), it.getPrice(), it.getCategory()));
+            data.add(new ItemModel(it.getId(), it.getName(), it.getPrice(), it.getCategory(), it.getSeller()));
         }
         return data;
     }
@@ -256,15 +258,15 @@ public class MarketClientController implements Initializable {
     }
 
     public void onItemSold(Item item) {
-
+        log.info("Sold item " + item.getName());
     }
 
     public void onItemPurchased(Item item) {
-
+        log.info("Purchased item " + item.getName());
     }
 
     public void onLackOfFunds() {
-
+        log.info("Lack of funds! Cannot purchase");
     }
 
     public void updateMarketplace(Collection<Item> allItems) {
