@@ -6,13 +6,13 @@ import javafx.beans.property.*;
 public class ItemModel {
     private final SimpleStringProperty id;
     private final SimpleStringProperty name;
-    private final SimpleDoubleProperty price;
+    private final SimpleFloatProperty price;
     private final SimpleObjectProperty<Item.Category> category;
 
     public ItemModel(String id, String name, float price, Item.Category category) {
         this.id = new SimpleStringProperty(id);
         this.name = new SimpleStringProperty(name);
-        this.price = new SimpleDoubleProperty(price);
+        this.price = new SimpleFloatProperty(price);
         this.category = new SimpleObjectProperty<>(category);
     }
 
@@ -28,10 +28,10 @@ public class ItemModel {
     public String getName() {
         return name.get();
     }
-    public void setPrice(Double price) {
+    public void setPrice(float price) {
         this.price.set(price);
     }
-    public Double getPrice() {
+    public float getPrice() {
         return price.get();
     }
     public void setCategory(Item.Category category) {
