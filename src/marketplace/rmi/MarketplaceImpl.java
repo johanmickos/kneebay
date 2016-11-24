@@ -99,7 +99,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
                 MarketClient userClient = this.clientRepository.getClient(user.getName());
                 for (ItemWish wish : user.getWishes())
                 {
-                    if(wish.getType().equals(item.getCategory()) && wish.getMaxAmount() <= item.getPrice())
+                    if(wish.getType().equals(item.getCategory()) && wish.getMaxAmount() >= item.getPrice())
                     {
                         userClient.onWishNotify(item);
                     }
