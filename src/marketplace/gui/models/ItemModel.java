@@ -48,4 +48,14 @@ public class ItemModel {
     public Item.Category getCategory() {
         return category.get();
     }
+
+    public Item generateItem() {
+        return Item.builder()
+                .name(getName())
+                .price(getPrice())
+                .id(getId())
+                .category(getCategory())
+                .seller(getSeller())
+                .build();
+    }
 }
