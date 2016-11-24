@@ -302,6 +302,14 @@ public class MarketClientController implements Initializable {
     public void onItemPurchased(Item item) {
         logArea.appendText("Purchased item '" + item.getName() + "' for " + item.getPrice() + "\n");
         updateAvailableFunds();
+
+
+        Platform.runLater(() -> wishList.getItems().removeIf(o -> {
+            String str = o.toString();
+            float max = Float.valueOf(str.substring(str.indexOf("(max: ")+5,str.indexOf(")")));
+            log.info("Comparing max: " + max);
+            return str.startsWith(item.getCategory().name()) && max >= item.getPrice();
+        }));
     }
 
     public void onLackOfFunds() {
