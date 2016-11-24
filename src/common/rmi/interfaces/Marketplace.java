@@ -1,6 +1,7 @@
 package common.rmi.interfaces;
 
 import common.Item;
+import common.ItemWish;
 import common.User;
 
 import java.rmi.Remote;
@@ -14,8 +15,8 @@ public interface Marketplace extends Remote {
 
     void addItem(Item item) throws RemoteException;
     void removeItem(Item item, String username) throws RemoteException; // Should verify ownership
-    void addWish(Item.Category type) throws RemoteException;
-    void removeWish(Item.Category type) throws RemoteException;
+    void addWish(ItemWish wish, String username) throws RemoteException;
+    void removeWish(ItemWish wish, String username) throws RemoteException;
     void buyItem(Item item, String username) throws RemoteException;
 
         /*

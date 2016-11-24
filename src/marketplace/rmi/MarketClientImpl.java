@@ -1,6 +1,7 @@
 package marketplace.rmi;
 
 import common.Item;
+import common.ItemWish;
 import common.rmi.interfaces.MarketClient;
 
 import java.rmi.RemoteException;
@@ -17,7 +18,7 @@ public class MarketClientImpl extends UnicastRemoteObject implements MarketClien
     }
 
     @Override
-    public void onWishNotify(Item.Category type) throws RemoteException {
+    public void onWishNotify(ItemWish wish) throws RemoteException {
 
     }
 

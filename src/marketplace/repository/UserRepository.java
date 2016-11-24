@@ -45,6 +45,20 @@ public class UserRepository implements IUserRepository
         return user;
     }
 
+    public void updateUser(User user)
+    {
+        try
+        {
+            User oldUser = getUser(user.getName());
+            mockDB.users.remove(oldUser);
+            mockDB.users.add(user);
+        }
+        catch (NotFoundException ex)
+        {
+            mockDB.users.add(user);
+        }
+    }
+
     public boolean removeUser(String username)
     {
         mockDB.users.removeIf(u -> u.getName().equals(username));

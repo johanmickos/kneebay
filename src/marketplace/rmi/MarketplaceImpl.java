@@ -1,6 +1,7 @@
 package marketplace.rmi;
 
 import common.Item;
+import common.ItemWish;
 import common.User;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
@@ -116,13 +117,49 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public void addWish(Item.Category type) throws RemoteException {
+    public void addWish(ItemWish wish, String username) throws RemoteException
+    {
+        User user;
+        MarketClient userClient = null;
 
+        try
+        {
+            user = this.userRepository.getUser(username);
+            userClient = this.clientRepository.getClient(username);
+
+            user.addWish(wish);
+            this.userRepository.updateUser(user);
+        }
+        catch (Exception ex)
+        {
+            if(userClient != null)
+            {
+                userClient.onException(ex);
+            }
+        }
     }
 
     @Override
-    public void removeWish(Item.Category type) throws RemoteException {
+    public void removeWish(ItemWish wish, String username) throws RemoteException
+    {
+        User user;
+        MarketClient userClient = null;
 
+        try
+        {
+            user = this.userRepository.getUser(username);
+            userClient = this.clientRepository.getClient(username);
+
+            user.removeWish(wish);
+            this.userRepository.updateUser(user);
+        }
+        catch (Exception ex)
+        {
+            if(userClient != null)
+            {
+                userClient.onException(ex);
+            }
+        }
     }
 
     @Override
