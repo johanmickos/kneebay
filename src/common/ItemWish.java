@@ -32,4 +32,8 @@ public class ItemWish implements Serializable
     {
         this.maxAmount = maxAmount;
     }
+
+    public String displayString() {
+        return type + " (max: " + maxAmount + ")";
+    }
 }

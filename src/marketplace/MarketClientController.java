@@ -2,6 +2,7 @@ package marketplace;
 
 import bank.RejectedException;
 import common.Item;
+import common.ItemWish;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.Marketplace;
@@ -42,6 +43,7 @@ public class MarketClientController implements Initializable {
     @FXML public Label marketplaceLabel;
     @FXML public TextArea logArea;
     @FXML public TableView marketplaceTable;
+    @FXML public ListView wishList;
 
     public static final int INITIAL_FUNDS = 1000;
 
@@ -176,15 +178,35 @@ public class MarketClientController implements Initializable {
     }
 
     public void onNewWish(ActionEvent actionEvent) throws IOException {
-        log.info("Creating new wish");
-
         Stage stage = new Stage();
-        Parent root = FXMLLoader.load(getClass().getResource("/text.fxml"));
-        stage.setScene(new Scene(root));
-        stage.setTitle("My modal window");
+        Parent root = FXMLLoader.load(getClass().getResource("/add-wish-modal.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Add New Wish to " + marketplaceName);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(
-                ((Node) actionEvent.getSource()).getScene().getWindow());
+        stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
+
+        TextField newWishPrice = (TextField) scene.lookup("#newWishPrice");
+        ChoiceBox categoryChoice = (ChoiceBox) scene.lookup("#newWishCategory");
+        Button submitButton = (Button) scene.lookup("#submitNewItem");
+
+        categoryChoice.getItems().addAll(Item.Category.values());
+
+        submitButton.setOnAction(event -> {
+            float price = Float.parseFloat(newWishPrice.getText());
+            Item.Category cat = (Item.Category) categoryChoice.getValue();
+            ItemWish wish = new ItemWish(cat, price);
+            try {
+                marketplace.addWish(wish, username);
+                wishList.getItems().add(wish.displayString());
+
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                logArea.appendText("Could not create the new wish.");
+            }
+            stage.close();
+        });
+
         stage.show();
     }
 
