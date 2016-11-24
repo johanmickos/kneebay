@@ -6,6 +6,7 @@ import common.ItemWish;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.Marketplace;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -288,12 +289,14 @@ public class MarketClientController implements Initializable {
     }
 
     private void updateAvailableFunds() {
-        try {
-            fundsLabel.setText("$" + String.valueOf(account.getBalance()));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            logArea.appendText("ERR: Could not get balance from bank\n");
-        }
+        Platform.runLater(() -> {
+            try {
+                fundsLabel.setText("$" + String.valueOf(bank.getAccount(username).getBalance()));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                logArea.appendText("ERR: Could not get balance from bank\n");
+            }
+        });
     }
 
     public void onItemPurchased(Item item) {
