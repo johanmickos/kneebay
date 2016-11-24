@@ -18,7 +18,7 @@ public class ItemRepository implements IItemRepository
 
     public void removeItem(Item item)
     {
-        mockDB.items.remove(item);
+        mockDB.items.removeIf(i -> i.getId().equals(item.getId()));
     }
 
     public Collection<Item> getAllItems()

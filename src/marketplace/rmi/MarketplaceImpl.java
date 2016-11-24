@@ -88,6 +88,8 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     {
         this.itemRepository.addItem(item);
         updateMarketplaceForAllClients();
+
+        // TODO loop trough all wishes
     }
 
     @Override
