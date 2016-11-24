@@ -69,19 +69,16 @@ public class MarketClientController implements Initializable {
     private void initializeMarketplaceTable() {
         TableColumn<ItemModel, String> priceCol = new TableColumn<>("Price");
         priceCol.setMinWidth(75);
-        priceCol.setCellValueFactory(new PropertyValueFactory<ItemModel, String>("price"));
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         TableColumn<ItemModel, String> titleCol = new TableColumn<>("Title");
         titleCol.setMinWidth(100);
-        titleCol.setCellValueFactory(new PropertyValueFactory<ItemModel, String>("name"));
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<ItemModel, String> catCol = new TableColumn<>("Category");
         catCol.setMinWidth(125);
-        catCol.setCellValueFactory(new PropertyValueFactory<ItemModel, String>("category"));
+        catCol.setCellValueFactory(new PropertyValueFactory<>("category"));
 
-//        TableColumn<ItemModel, String> idCol = new TableColumn<>("ID");
-//        idCol.setMinWidth(117);
-//        idCol.setCellValueFactory(new PropertyValueFactory<ItemModel, String>("id"));
 
         TableColumn actionCol = new TableColumn("Actions");
         catCol.setMinWidth(100);
@@ -92,6 +89,7 @@ public class MarketClientController implements Initializable {
                         final TableCell<ItemModel, String> cell = new TableCell<ItemModel, String>() {
 
                             final Button buyButton = new Button("Buy");
+                            final Button removeButton = new Button("Remove");
 
                             @Override
                             public void updateItem(String item, boolean empty) {
@@ -100,13 +98,16 @@ public class MarketClientController implements Initializable {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
-                                    buyButton.setOnAction((ActionEvent event) ->
-                                    {
-                                        ItemModel itemModel = getTableView().getItems().get(getIndex());
-                                        handleBuyItem(itemModel);
-                                    });
-                                    setGraphic(buyButton);
-                                    setText(null);
+                                    final ItemModel itemModel = getTableView().getItems().get(getIndex());
+                                    if (itemModel.getSeller().equals(username)) {
+                                        removeButton.setOnAction((ActionEvent event) -> handleRemoveItem(itemModel));
+                                        setGraphic(removeButton);
+                                        setText(null);
+                                    } else {
+                                        buyButton.setOnAction((ActionEvent event) -> handleBuyItem(itemModel));
+                                        setGraphic(buyButton);
+                                        setText(null);
+                                    }
                                 }
                             }
                         };
@@ -118,22 +119,27 @@ public class MarketClientController implements Initializable {
         marketplaceTable.getColumns().addAll(priceCol, titleCol, catCol, actionCol);
     }
 
+
+
     private void handleBuyItem(ItemModel itemModel) {
         log.info("Buying item " + itemModel.getName() + " for " + username);
         try {
-            Item clone = Item.builder()
-                    .name(itemModel.getName())
-                    .price(itemModel.getPrice())
-                    .id(itemModel.getId())
-                    .category(itemModel.getCategory())
-                    .seller(itemModel.getSeller())
-                    .build();
+            Item clone = itemModel.generateItem();
             marketplace.buyItem(clone, username);
-            logArea.appendText("You purchased the item '" + itemModel.getName() + "' for $" + itemModel.getPrice());
         } catch (RemoteException e) {
             e.printStackTrace();
             log.severe("Could not purchase item " + itemModel.getName());
-            logArea.appendText("Could not purchase the item " + itemModel.getName());
+            logArea.appendText("Could not purchase the item " + itemModel.getName() + "\n");
+        }
+    }
+
+    private void handleRemoveItem(ItemModel itemModel) {
+        try {
+            Item clone = itemModel.generateItem();
+            marketplace.removeItem(clone, username);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            logArea.appendText("Could not remove the item " + itemModel.getName() + "\n");
         }
     }
 
@@ -151,7 +157,7 @@ public class MarketClientController implements Initializable {
 
             account.deposit(INITIAL_FUNDS);
 
-            fundsLabel.setText(String.valueOf("$" + account.getBalance()));
+            updateAvailableFunds();
             usernameField.setEditable(false);
             registerButton.setText(DISCONNECT_STR);
             marketplaceLabel.setText("Marketplace: " + marketplaceName);
@@ -165,8 +171,6 @@ public class MarketClientController implements Initializable {
     }
 
     public void onUnregisterUser(ActionEvent actionEvent) {
-        // TODO Complete
-        log.info("Unregistering user");
         registerButton.setText(REGISTER_STR);
         usernameField.setEditable(true);
         try {
@@ -174,6 +178,7 @@ public class MarketClientController implements Initializable {
         } catch (RemoteException e) {
             // TODO Show exception
             e.printStackTrace();
+            logArea.appendText("ERR: Could not unregister from marketplace\n");
         }
     }
 
@@ -199,10 +204,9 @@ public class MarketClientController implements Initializable {
             try {
                 marketplace.addWish(wish, username);
                 wishList.getItems().add(wish.displayString());
-
             } catch (RemoteException e) {
                 e.printStackTrace();
-                logArea.appendText("Could not create the new wish.");
+                logArea.appendText("Could not create the new wish.\n");
             }
             stage.close();
         });
@@ -211,8 +215,6 @@ public class MarketClientController implements Initializable {
     }
 
     public void onNewItem(ActionEvent actionEvent) throws IOException {
-        log.info("Creating new item");
-        // Show modal
         Stage stage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("/add-item-modal.fxml"));
         Scene scene = new Scene(root);
@@ -240,7 +242,7 @@ public class MarketClientController implements Initializable {
                 marketplace.addItem(newItem);
             } catch (RemoteException e) {
                 e.printStackTrace();
-                logArea.appendText("Could not create the new item '" + newItem.getName() + "'");
+                logArea.appendText("ERR: Could not create the new item '" + newItem.getName() + "'\n");
             }
             stage.close();
         });
@@ -276,19 +278,32 @@ public class MarketClientController implements Initializable {
     }
 
     public void onWishNotify(Item type) {
-        logArea.appendText("An item from your wish list is available!");
+        logArea.appendText("An item from your wish list is available!\n");
     }
 
     public void onItemSold(Item item) {
         log.info("Sold item " + item.getName());
+        logArea.appendText("Your item '" + item.getName() + "' sold for " + item.getPrice() + "\n");
+        updateAvailableFunds();
+    }
+
+    private void updateAvailableFunds() {
+        try {
+            fundsLabel.setText("$" + String.valueOf(account.getBalance()));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            logArea.appendText("ERR: Could not get balance from bank\n");
+        }
     }
 
     public void onItemPurchased(Item item) {
-        log.info("Purchased item " + item.getName());
+        logArea.appendText("Purchased item '" + item.getName() + "' for " + item.getPrice() + "\n");
+        updateAvailableFunds();
     }
 
     public void onLackOfFunds() {
         log.info("Lack of funds! Cannot purchase");
+        logArea.appendText("Lack of funds! Cannot purchase\n");
     }
 
     public void updateMarketplace(Collection<Item> allItems) {
