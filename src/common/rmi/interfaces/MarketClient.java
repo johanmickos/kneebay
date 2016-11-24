@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface MarketClient extends Remote {
 
     // Notifications
-    void onWishNotify(Item.Category type) throws RemoteException;
+    void onWishNotify(Item item) throws RemoteException;
     void onItemSold(Item item) throws RemoteException;
     void onItemPurchased(Item item) throws RemoteException;
     void onLackOfFunds() throws RemoteException;
@@ -17,7 +17,8 @@ public interface MarketClient extends Remote {
     // TODO void updateFunds(Double balance) throws RemoteException;
     // Could do either from server or in GUI, but only if we display available funds
 
-    void onException(Object data) throws RemoteException;
+    void onException(String data) throws RemoteException;
+    void onException(Exception ex) throws RemoteException;
 
     void updateMarketplace(Collection<Item> allItems) throws RemoteException;
 }
