@@ -1,8 +1,9 @@
 package common;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Item {
+public class Item implements Serializable{
     private String id;
     private String name;
     private float price;
@@ -66,6 +67,10 @@ public class Item {
     public static class Builder {
         private Item instance = new Item();
 
+        public Builder id(String id) {
+            instance.id = id;
+            return this;
+        }
         public Builder name(String name) {
             instance.name = name;
             return this;
