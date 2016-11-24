@@ -8,6 +8,7 @@ import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.repositories.*;
+import marketplace.repositories.exceptions.NotFoundException;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -15,6 +16,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -89,7 +91,25 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         this.itemRepository.addItem(item);
         updateMarketplaceForAllClients();
 
-        // TODO loop trough all wishes
+        List<User> users = this.userRepository.getUsers();
+        for (User user : users)
+        {
+            try
+            {
+                MarketClient userClient = this.clientRepository.getClient(user.getName());
+                for (ItemWish wish : user.getWishes())
+                {
+                    if(wish.getType().equals(item.getCategory()) && wish.getMaxAmount() <= item.getPrice())
+                    {
+                        userClient.onWishNotify(item);
+                    }
+                }
+            }
+            catch (NotFoundException ex)
+            {
+                continue;
+            }
+        }
     }
 
     @Override

@@ -5,6 +5,8 @@ import common.rmi.interfaces.Account;
 import marketplace.database.mockDB;
 import marketplace.repositories.exceptions.NotFoundException;
 
+import java.util.List;
+
 public class UserRepository implements IUserRepository
 {
     public UserRepository()
@@ -66,4 +68,8 @@ public class UserRepository implements IUserRepository
         return true;
     }
 
+    public List<User> getUsers()
+    {
+        return mockDB.users;
+    }
 }
