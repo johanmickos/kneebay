@@ -1,8 +1,6 @@
-package marketplace.repository;
+package marketplace.repositories;
 
 import common.Item;
-import common.rmi.interfaces.Bank;
-import common.rmi.interfaces.MarketClient;
 import marketplace.database.mockDB;
 
 import java.util.Collection;

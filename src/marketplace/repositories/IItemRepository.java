@@ -1,7 +1,6 @@
-package marketplace.repository;
+package marketplace.repositories;
 
 import common.Item;
-import common.rmi.interfaces.MarketClient;
 
 import java.util.Collection;
 

@@ -1,4 +1,4 @@
-package marketplace.repository.exceptions;
+package marketplace.repositories.exceptions;
 
 public class NotFoundException extends Exception
 {

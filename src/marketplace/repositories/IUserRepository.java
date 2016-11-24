@@ -1,8 +1,8 @@
-package marketplace.repository;
+package marketplace.repositories;
 
 import common.User;
 import common.rmi.interfaces.Account;
-import marketplace.repository.exceptions.NotFoundException;
+import marketplace.repositories.exceptions.NotFoundException;
 
 public interface IUserRepository
 {

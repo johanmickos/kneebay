@@ -1,9 +1,8 @@
-package marketplace.repository;
+package marketplace.repositories;
 
 import common.rmi.interfaces.MarketClient;
-import marketplace.repository.exceptions.NotFoundException;
+import marketplace.repositories.exceptions.NotFoundException;
 
-import java.util.List;
 import java.util.Map;
 
 public interface IClientRepository

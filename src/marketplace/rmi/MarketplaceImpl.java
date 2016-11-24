@@ -7,8 +7,7 @@ import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
-import marketplace.repository.*;
-import marketplace.repository.exceptions.NotFoundException;
+import marketplace.repositories.*;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

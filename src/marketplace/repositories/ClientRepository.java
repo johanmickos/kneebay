@@ -1,11 +1,9 @@
-package marketplace.repository;
+package marketplace.repositories;
 
-import bank.Client;
 import common.rmi.interfaces.MarketClient;
 import marketplace.database.mockDB;
-import marketplace.repository.exceptions.NotFoundException;
+import marketplace.repositories.exceptions.NotFoundException;
 
-import java.util.List;
 import java.util.Map;
 
 public class ClientRepository implements IClientRepository
