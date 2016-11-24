@@ -18,7 +18,7 @@ public class MarketClientImpl extends UnicastRemoteObject implements MarketClien
     }
 
     @Override
-    public void onWishNotify(ItemWish wish) throws RemoteException {
+    public void onWishNotify(Item wish) throws RemoteException {
 
     }
 
@@ -38,7 +38,12 @@ public class MarketClientImpl extends UnicastRemoteObject implements MarketClien
     }
 
     @Override
-    public void onException(Object data) throws RemoteException {
+    public void onException(String data) throws RemoteException {
+
+    }
+
+    @Override
+    public void onException(Exception ex) throws RemoteException {
 
     }
 
