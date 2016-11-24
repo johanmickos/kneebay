@@ -258,15 +258,15 @@ public class MarketClientController implements Initializable {
     }
 
     public void onItemSold(Item item) {
-
+        log.info("Sold item " + item.getName());
     }
 
     public void onItemPurchased(Item item) {
-
+        log.info("Purchased item " + item.getName());
     }
 
     public void onLackOfFunds() {
-
+        log.info("Lack of funds! Cannot purchase");
     }
 
     public void updateMarketplace(Collection<Item> allItems) {
