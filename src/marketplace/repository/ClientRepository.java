@@ -29,6 +29,11 @@ public class ClientRepository implements IClientRepository
         mockDB.clients.remove(username);
     }
 
+    public MarketClient getClient(String username)
+    {
+        return mockDB.clients.get(username);
+    }
+
     public Map<String, MarketClient> getAllClients()
     {
         return mockDB.clients;

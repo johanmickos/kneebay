@@ -1,7 +1,6 @@
 package marketplace.rmi;
 
 import common.Item;
-import common.User;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
@@ -14,7 +13,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -40,7 +38,6 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    // TODO register with username and password
     public synchronized void register(String username, String password, Account account, MarketClient client) throws RemoteException
     {
         log.info("Registering user: " + username);
@@ -85,21 +82,22 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public void addItem(Item item, MarketClient client) throws RemoteException
+    public void addItem(Item item) throws RemoteException
     {
         this.itemRepository.addItem(item);
         updateMarketplaceForAllClients();
     }
 
     @Override
-    public synchronized void removeItem(Item item, MarketClient client) throws RemoteException
+    public synchronized void removeItem(Item item, String username) throws RemoteException
     {
-        if(item.getSeller().equals(client))
+        if(item.getSeller().equals(username))
         {
             this.itemRepository.removeItem(item);
         }
         else
         {
+            MarketClient client = this.clientRepository.getClient(username);
             client.onException("You don't have the authority to remove this item!");
             return;
         }
@@ -118,7 +116,14 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public synchronized void buyItem(Item item, MarketClient buyer) throws RemoteException {
+    public synchronized void buyItem(Item item, String username) throws RemoteException
+    {
+        Double itemPrice = item.getPrice();
+
+        MarketClient seller = this.clientRepository.getClient(item.getSeller());
+        MarketClient buyer = this.clientRepository.getClient(username);
+
+        
 
     }
 

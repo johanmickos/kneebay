@@ -9,5 +9,6 @@ public interface IClientRepository
 {
     void mapClientToUser(String username, MarketClient client);
     void removeClientFromUser(String username);
+    MarketClient getClient(String username);
     Map<String, MarketClient> getAllClients();
 }
