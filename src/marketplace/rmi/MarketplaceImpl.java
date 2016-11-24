@@ -138,7 +138,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public void addWish(ItemWish wish, String username) throws RemoteException
+    public synchronized void addWish(ItemWish wish, String username) throws RemoteException
     {
         User user;
         MarketClient userClient = null;
@@ -161,7 +161,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public void removeWish(ItemWish wish, String username) throws RemoteException
+    public synchronized void removeWish(ItemWish wish, String username) throws RemoteException
     {
         User user;
         MarketClient userClient = null;
