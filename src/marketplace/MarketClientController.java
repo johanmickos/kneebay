@@ -151,11 +151,17 @@ public class MarketClientController implements Initializable {
             client = new MarketClientImpl(username, this);
             this.username = username;
             bank = (Bank) Naming.lookup(bankName);
-            account = bank.newAccount(username);
+            try {
+                log.info("Trying to create account");
+                account = bank.newAccount(username);
+                account.deposit(INITIAL_FUNDS);
+            } catch (RejectedException rEx) {
+                log.info("Getting account");
+                account = bank.getAccount(username);
+            }
             marketplace = (Marketplace) Naming.lookup(marketplaceName);
             marketplace.register(username, null, account, client);
 
-            account.deposit(INITIAL_FUNDS);
 
             updateAvailableFunds();
             usernameField.setEditable(false);
@@ -163,7 +169,7 @@ public class MarketClientController implements Initializable {
             marketplaceLabel.setText("Marketplace: " + marketplaceName);
 
             // TODO Handle accordingly
-        } catch (RemoteException | MalformedURLException | NotBoundException | RejectedException e) {
+        } catch (RemoteException | MalformedURLException | NotBoundException e) {
             e.printStackTrace();
             registerButton.setText(REGISTER_STR);
             registerButton.setSelected(false);
