@@ -92,6 +92,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         updateMarketplaceForAllClients();
 
         List<User> users = this.userRepository.getUsers();
+        // TODO Scale!
         for (User user : users)
         {
             try
