@@ -50,9 +50,12 @@ public class Item implements Serializable{
 
     public enum Category {
         Camera,
+        Clothing,
+        Sport,
+        Outdoor,
         Furniture,
         Electronics,
-        Miscellaneaous,
+        Miscellaneous,
     }
 
     private Item() {
