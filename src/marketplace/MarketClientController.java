@@ -179,6 +179,9 @@ public class MarketClientController implements Initializable {
     public void onUnregisterUser(ActionEvent actionEvent) {
         registerButton.setText(REGISTER_STR);
         usernameField.setEditable(true);
+        marketplaceLabel.setText("Marketplace");
+        fundsLabel.setText("$0.00");
+        marketplaceTable.getItems().clear();
         try {
             marketplace.unregister(username);
         } catch (RemoteException e) {
