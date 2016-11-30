@@ -3,17 +3,18 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="marketplace.MarketClientController">
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="marketplace.MarketClientController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <TextField prefHeight="26.0" prefWidth="87.0" text="Username" fx:id="usernameField">
+            <TextField fx:id="usernameField" prefHeight="26.0" prefWidth="87.0" text="Username">
             </TextField>
-            <ToggleButton mnemonicParsing="false" text="Register" styleClass="wide-btn" fx:id="registerButton" onAction="#onToggleRegistration"/>
-            <Button mnemonicParsing="false" text="New Item" onAction="#onNewItem"/>
-            <Button mnemonicParsing="false" text="New Wish" onAction="#onNewWish"/>
+            <ToggleButton fx:id="registerButton" mnemonicParsing="false" onAction="#onToggleRegistration"
+                          styleClass="wide-btn" text="Register"/>
+            <Button mnemonicParsing="false" onAction="#onNewItem" text="New Item"/>
+            <Button mnemonicParsing="false" onAction="#onNewWish" text="New Wish"/>
         </ToolBar>
     </top>
     <right>
@@ -22,7 +23,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
             <Label text="Wish List"/>
-            <ListView prefHeight="200.0" prefWidth="200.0" fx:id="wishList"/>
+            <ListView fx:id="wishList" prefHeight="255.0" prefWidth="140.0"/>
         </VBox>
     </right>
     <center>
@@ -30,13 +31,13 @@
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
-            <Label text="Marketplace" fx:id="marketplaceLabel"/>
+            <Label fx:id="marketplaceLabel" text="Marketplace"/>
             <HBox>
                 <Label text="Available funds: "/>
-                <Label text="\$0.00" fx:id="fundsLabel" />
+                <Label fx:id="fundsLabel" text="\$0.00"/>
             </HBox>
 
-            <TableView prefHeight="200.0" prefWidth="200.0" fx:id="marketplaceTable">
+            <TableView fx:id="marketplaceTable" prefHeight="241.0" prefWidth="420.0">
             </TableView>
         </VBox>
     </center>
@@ -46,7 +47,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
             <Label text="Log"/>
-            <TextArea prefHeight="200.0" prefWidth="200.0" fx:id="logArea"/>
+            <TextArea fx:id="logArea" prefHeight="200.0" prefWidth="200.0"/>
         </VBox>
     </bottom>
 </BorderPane>
