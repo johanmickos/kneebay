@@ -1,5 +1,6 @@
 package marketplace.rmi;
 
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import common.Item;
 import common.ItemWish;
 import common.User;
@@ -234,9 +235,15 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
                 {
                     buyer.getBankAccount().withdraw(itemPrice);
                     seller.getBankAccount().deposit(itemPrice);
+
+                    //TODO
+                    //seller.numberOfItemsSold++;
+                    //buyer.numberOfItemsBought++;
+
                     buyerClient.onItemPurchased(item);
                     sellerClient.onItemSold(item);
                     this.itemService.removeItem(item);
+
                     updateMarketplaceForAllClients();
                 }
                 else
@@ -258,6 +265,28 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         {
             throw new SessionException("Invalid session");
         }
+    }
+
+    @Override
+    public String getActivity(String session)
+            throws RemoteException, SessionException, NotFoundException
+    {
+        // For each user, the server (marketplace) keeps a record of user's activities:
+        // the total number of items the user has bought and the total number of items the user has sold.
+        //TODO decide on how we want to return the users activity record
+
+        if(this.sessionManagement.isValidSession(session))
+        {
+            User user = this.userService.getUser(session);
+            //this.userService.getActivity(user.getName());
+            // or this.user.getNumberOfItemsBought..
+        }
+        else
+        {
+            throw new SessionException("Invalid session");
+        }
+
+        return "Total number of items bought: 10. Total number of items sold: 4";
     }
 
     private void updateMarketplaceForAllClients() throws RemoteException

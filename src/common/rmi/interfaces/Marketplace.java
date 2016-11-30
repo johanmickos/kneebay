@@ -22,6 +22,7 @@ public interface Marketplace extends Remote {
     void addWish(ItemWish wish, String session) throws RemoteException, SessionException, NotFoundException;
     void removeWish(ItemWish wish, String session) throws RemoteException, SessionException, NotFoundException;
     void buyItem(Item item, String session) throws RemoteException, SessionException;
+    String getActivity(String session) throws RemoteException, SessionException, NotFoundException;
 
         /*
         Develop a client-server distributed application in Java for trading things (items)
