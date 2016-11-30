@@ -47,6 +47,12 @@ public class UserRepository implements IUserRepository
         return user;
     }
 
+    public User getUser(String username, String password) throws NotFoundException
+    {
+        // not implemented for mock
+        return null;
+    }
+
     public void updateUser(User user)
     {
         try

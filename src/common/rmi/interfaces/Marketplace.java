@@ -3,6 +3,8 @@ package common.rmi.interfaces;
 import common.Item;
 import common.ItemWish;
 import common.User;
+import marketplace.repositories.exceptions.NotFoundException;
+import marketplace.security.exceptions.SessionException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -11,13 +13,15 @@ public interface Marketplace extends Remote {
     String DEFAULT_MARKETPLACE = "kneeBay";
 
     void register(String username, String password, Account account, MarketClient client) throws RemoteException;
-    void unregister(String username) throws RemoteException;
+    void unregister(String session) throws RemoteException, NotFoundException;
+    String login(String username, String password, MarketClient client) throws RemoteException, NotFoundException;
+    void logout(String session) throws RemoteException, NotFoundException;
 
     void addItem(Item item) throws RemoteException;
-    void removeItem(Item item, String username) throws RemoteException; // Should verify ownership
-    void addWish(ItemWish wish, String username) throws RemoteException;
-    void removeWish(ItemWish wish, String username) throws RemoteException;
-    void buyItem(Item item, String username) throws RemoteException;
+    void removeItem(Item item, String session) throws RemoteException, SessionException, NotFoundException; // Should verify ownership
+    void addWish(ItemWish wish, String session) throws RemoteException, SessionException, NotFoundException;
+    void removeWish(ItemWish wish, String session) throws RemoteException, SessionException, NotFoundException;
+    void buyItem(Item item, String session) throws RemoteException, SessionException;
 
         /*
         Develop a client-server distributed application in Java for trading things (items)

@@ -1,5 +1,6 @@
 package marketplace.rmi;
 
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import common.Item;
 import common.ItemWish;
 import common.User;
@@ -9,6 +10,11 @@ import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.repositories.*;
 import marketplace.repositories.exceptions.NotFoundException;
+import marketplace.security.SessionManagement;
+import marketplace.security.exceptions.SessionException;
+import marketplace.services.ItemService;
+import marketplace.services.MarketClientService;
+import marketplace.services.UserService;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -26,48 +32,31 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     private Bank bank;
     private String bankname = Bank.DEFAULT_BANK;
 
-    private IUserRepository userRepository;
-    private IClientRepository clientRepository;
-    private IItemRepository itemRepository;
+    private UserService userService;
+    private MarketClientService marketClientService;
+    private ItemService itemService;
+
+    private SessionManagement sessionManagement;
 
     public MarketplaceImpl() throws RemoteException, NotBoundException, MalformedURLException
     {
         super();
         bank = (Bank) Naming.lookup(bankname);
 
-        // Here we should be able to switch between mock repo and a real db repo
-        this.userRepository = new UserRepository();
-        this.clientRepository = new ClientRepository();
-        this.itemRepository = new ItemRepository();
+        this.userService = new UserService(new UserRepository());
+        this.marketClientService = new MarketClientService(new ClientRepository());
+        this.itemService = new ItemService(new ItemRepository());
+        this.sessionManagement = new SessionManagement();
     }
 
     @Override
     public synchronized void register(String username, String password, Account account, MarketClient client) throws RemoteException
     {
-        log.info("Registering user: " + username);
-
         try
         {
-            if(bank.getAccount(account.getName()) != null)
-            {
-                boolean addedUser = this.userRepository.addUser(username, password, account);
-
-                if(addedUser)
-                {
-                    this.clientRepository.mapClientToUser(username, client);
-
-                    Collection<Item> items = this.itemRepository.getAllItems();
-                    client.updateMarketplace(items);
-                }
-                else
-                {
-                    client.onException("Account already exists at the marketplace!");
-                }
-            }
-            else
-            {
-                client.onException("Account does not exist at bank!");
-            }
+            log.info("Registering user: " + username);
+            this.userService.register(username, password, account, bank);
+            // TODO : let client know of succesful registration?
         }
         catch (Exception ex)
         {
@@ -77,27 +66,47 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public synchronized void unregister(String username) throws RemoteException
+    public synchronized void unregister(String session) throws RemoteException, NotFoundException
     {
-        log.info("Unregistering user: " + username);
+        log.info("Unregistering user: " + session);
 
-        this.userRepository.removeUser(username);
-        this.clientRepository.removeClientFromUser(username);
+        this.userService.unregister(session);
+        this.marketClientService.removeMarketClientFromUser(this.userService.getUser(session).getName());
+    }
+
+    @Override
+    public String login(String username, String password, MarketClient client) throws RemoteException, NotFoundException
+    {
+        // throws a NotFoundException if login fails
+        String session = this.userService.login(username, password);
+        this.marketClientService.mapMarketClientToUser(username, client);
+
+        Collection<Item> items = this.itemService.getAllItems();
+        client.updateMarketplace(items);
+
+        return session;
+    }
+
+    @Override
+    public void logout(String session) throws RemoteException, NotFoundException
+    {
+        this.userService.logout(session);
+        this.marketClientService.removeMarketClientFromUser(this.userService.getUser(session).getName());
     }
 
     @Override
     public void addItem(Item item) throws RemoteException
     {
-        this.itemRepository.addItem(item);
+        this.itemService.addItem(item);
         updateMarketplaceForAllClients();
 
-        List<User> users = this.userRepository.getUsers();
-        // TODO Scale!
+        // TODO : change this to table of wishes, that can be looked up by type and user
+        List<User> users = this.userService.getUsers();
         for (User user : users)
         {
             try
             {
-                MarketClient userClient = this.clientRepository.getClient(user.getName());
+                MarketClient userClient = this.marketClientService.getClient(user.getName());
                 for (ItemWish wish : user.getWishes())
                 {
                     if(wish.getType().equals(item.getCategory()) && wish.getMaxAmount() >= item.getPrice())
@@ -114,124 +123,148 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public synchronized void removeItem(Item item, String username) throws RemoteException
+    public synchronized void removeItem(Item item, String session)
+            throws RemoteException, SessionException, NotFoundException
     {
-        if(item.getSeller().equals(username))
+        if(this.sessionManagement.isValidSession(session))
         {
-            this.itemRepository.removeItem(item);
+            String username = this.userService.getUser(session).getName();
+
+            if(item.getSeller().equals(username))
+            {
+                this.itemService.removeItem(item);
+            }
+            else
+            {
+                try
+                {
+                    MarketClient client = this.marketClientService.getClient(username);
+                    client.onException("You don't have the authority to remove this item!");
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+
+                return;
+            }
+
+            updateMarketplaceForAllClients();
         }
         else
         {
+            throw new SessionException("Invalid session");
+        }
+    }
+
+    @Override
+    public synchronized void addWish(ItemWish wish, String session)
+            throws RemoteException, SessionException, NotFoundException
+    {
+        if(this.sessionManagement.isValidSession(session))
+        {
+            User user = this.userService.getUser(session);
+            user.addWish(wish);
+            this.userService.updateUser(user);
+        }
+        else
+        {
+            throw new SessionException("Invalid session");
+        }
+    }
+
+    @Override
+    public synchronized void removeWish(ItemWish wish, String session)
+            throws RemoteException, SessionException, NotFoundException
+    {
+        if(this.sessionManagement.isValidSession(session))
+        {
+            User user = this.userService.getUser(session);
+            user.removeWish(wish);
+            this.userService.updateUser(user);
+        }
+        else
+        {
+            throw new SessionException("Invalid session");
+        }
+
+        /*
+        User user;
+        MarketClient userClient = null;
+
+        try
+        {
+            user = this.userService.getUser(username);
+            userClient = this.marketClientService.getClient(username);
+
+            user.removeWish(wish);
+            this.userService.updateUser(user);
+        }
+        catch (Exception ex)
+        {
+            if(userClient != null)
+            {
+                userClient.onException(ex);
+            }
+        }
+        */
+    }
+
+    @Override
+    public synchronized void buyItem(Item item, String session)
+            throws RemoteException, SessionException
+    {
+        if(this.sessionManagement.isValidSession(session))
+        {
+            User seller;
+            MarketClient sellerClient;
+            User buyer;
+            MarketClient buyerClient = null;
+
             try
             {
-                MarketClient client = this.clientRepository.getClient(username);
-                client.onException("You don't have the authority to remove this item!");
+                float itemPrice = item.getPrice();
+
+                seller = this.userService.getUser(item.getSeller());
+                sellerClient = this.marketClientService.getClient(item.getSeller());
+
+                buyer = this.userService.getUser(session);
+                buyerClient = this.marketClientService.getClient(buyer.getName());
+
+                if(buyer.getBankAccount().getBalance() >= itemPrice)
+                {
+                    buyer.getBankAccount().withdraw(itemPrice);
+                    seller.getBankAccount().deposit(itemPrice);
+                    buyerClient.onItemPurchased(item);
+                    sellerClient.onItemSold(item);
+                    this.itemService.removeItem(item);
+                    updateMarketplaceForAllClients();
+                }
+                else
+                {
+                    buyerClient.onLackOfFunds();
+                }
             }
             catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
 
-            return;
-        }
-
-        updateMarketplaceForAllClients();
-    }
-
-    @Override
-    public synchronized void addWish(ItemWish wish, String username) throws RemoteException
-    {
-        User user;
-        MarketClient userClient = null;
-
-        try
-        {
-            user = this.userRepository.getUser(username);
-            userClient = this.clientRepository.getClient(username);
-
-            user.addWish(wish);
-            this.userRepository.updateUser(user);
-        }
-        catch (Exception ex)
-        {
-            if(userClient != null)
-            {
-                userClient.onException(ex);
+                if(buyerClient != null)
+                {
+                    buyerClient.onException(ex);
+                }
             }
         }
-    }
-
-    @Override
-    public synchronized void removeWish(ItemWish wish, String username) throws RemoteException
-    {
-        User user;
-        MarketClient userClient = null;
-
-        try
+        else
         {
-            user = this.userRepository.getUser(username);
-            userClient = this.clientRepository.getClient(username);
-
-            user.removeWish(wish);
-            this.userRepository.updateUser(user);
+            throw new SessionException("Invalid session");
         }
-        catch (Exception ex)
-        {
-            if(userClient != null)
-            {
-                userClient.onException(ex);
-            }
-        }
-    }
-
-    @Override
-    public synchronized void buyItem(Item item, String username) throws RemoteException
-    {
-        User seller;
-        MarketClient sellerClient;
-        User buyer;
-        MarketClient buyerClient = null;
-
-        try
-        {
-            float itemPrice = item.getPrice();
-
-            seller = this.userRepository.getUser(item.getSeller());
-            sellerClient = this.clientRepository.getClient(item.getSeller());
-
-            buyer = this.userRepository.getUser(username);
-            buyerClient = this.clientRepository.getClient(username);
-
-            if(buyer.getBankAccount().getBalance() >= itemPrice)
-            {
-                buyer.getBankAccount().withdraw(itemPrice);
-                seller.getBankAccount().deposit(itemPrice);
-                buyerClient.onItemPurchased(item);
-                sellerClient.onItemSold(item);
-                this.itemRepository.removeItem(item);
-                updateMarketplaceForAllClients();
-            }
-            else
-            {
-                buyerClient.onLackOfFunds();
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-
-            if(buyerClient != null)
-            {
-                buyerClient.onException(ex);
-            }
-        }
-
     }
 
     private void updateMarketplaceForAllClients() throws RemoteException
     {
-        Map<String, MarketClient> clients = this.clientRepository.getAllClients();
-        Collection<Item> items = this.itemRepository.getAllItems();
+        Map<String, MarketClient> clients = this.marketClientService.getAllMarketClients();
+        Collection<Item> items = this.itemService.getAllItems();
 
         for (Map.Entry<String, MarketClient> entry : clients.entrySet())
         {
