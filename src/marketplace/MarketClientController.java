@@ -22,7 +22,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import marketplace.gui.models.ItemModel;
+import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.rmi.MarketClientImpl;
+import marketplace.security.exceptions.SessionException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -130,6 +132,8 @@ public class MarketClientController implements Initializable {
             e.printStackTrace();
             log.severe("Could not purchase item " + itemModel.getName());
             logArea.appendText("Could not purchase the item " + itemModel.getName() + "\n");
+        } catch (SessionException e) {
+            e.printStackTrace();
         }
     }
 
@@ -140,6 +144,10 @@ public class MarketClientController implements Initializable {
         } catch (RemoteException e) {
             e.printStackTrace();
             logArea.appendText("Could not remove the item " + itemModel.getName() + "\n");
+        } catch (SessionException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -188,6 +196,8 @@ public class MarketClientController implements Initializable {
             // TODO Show exception
             e.printStackTrace();
             logArea.appendText("ERR: Could not unregister from marketplace\n");
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -216,6 +226,10 @@ public class MarketClientController implements Initializable {
             } catch (RemoteException e) {
                 e.printStackTrace();
                 logArea.appendText("Could not create the new wish.\n");
+            } catch (SessionException e) {
+                e.printStackTrace();
+            } catch (NotFoundException e) {
+                e.printStackTrace();
             }
             stage.close();
         });
