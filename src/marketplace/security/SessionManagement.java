@@ -1,10 +1,5 @@
 package marketplace.security;
 
-import com.sun.tools.javac.util.Pair;
-import com.sun.tools.javac.util.StringUtils;
-import common.User;
-import marketplace.repositories.IUserRepository;
-import marketplace.repositories.UserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
 
 import java.util.HashMap;
