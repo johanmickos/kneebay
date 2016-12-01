@@ -5,6 +5,7 @@ import marketplace.database.models.ItemModel;
 import marketplace.database.models.ItemStatus;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class JPAItemRepository implements IItemRepository
     public Collection<Item> getAllAvailableItems()
     {
         EntityManager em = emFactory.createEntityManager();
-        Collection<Item> items = null;
+        Collection<Item> items = new ArrayList<>();
         List<ItemModel> itemModels = em.createNamedQuery("getAllAvailableItems").getResultList();
 
         for (ItemModel itemModel : itemModels)
