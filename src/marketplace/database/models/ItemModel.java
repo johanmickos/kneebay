@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Table(name="itemTable")
 public class ItemModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
     //@ManyToOne
     private String buyer;  // Foreign key constraint

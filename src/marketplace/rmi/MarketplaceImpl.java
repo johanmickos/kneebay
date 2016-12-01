@@ -268,7 +268,8 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
                     + user.getNumItemsBought()
                     + "\n"
                     + "Total number of items sold: "
-                    + user.getNumItemsSold();
+                    + user.getNumItemsSold()
+                    + "\n";
         }
         else
         {
