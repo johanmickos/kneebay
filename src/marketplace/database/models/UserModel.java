@@ -2,27 +2,25 @@ package marketplace.database.models;
 
 import javax.persistence.*;
 
+@Entity
 @NamedQueries({
         @NamedQuery(
                 name = "findUserWithUsername",
-                query = "SELECT usr FROM UserModel usr WHERE usr.username LIKE :userName",
-                lockMode = LockModeType.OPTIMISTIC
+                query = "SELECT usr FROM UserModel usr WHERE usr.username LIKE :userName"
+//                lockMode = LockModeType.OPTIMISTIC
         ),
         @NamedQuery(
                 name = "deleteUserWithUsername",
-                query = "DELETE FROM UserModel usr WHERE usr.username LIKE :userName",
-                lockMode = LockModeType.OPTIMISTIC
+                query = "DELETE FROM UserModel usr WHERE usr.username LIKE :userName"
         ),
         @NamedQuery(
                 name = "getAllUsers",
                 query = "SELECT u FROM UserModel u"
         )
 })
-
-@Entity
-@Table(name = "userTable")
 public class UserModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
     private String currentSession; // TODO Check if this is necessary
     private String username;

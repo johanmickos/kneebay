@@ -35,6 +35,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class MarketClientController extends BaseController implements Initializable {
     private static final Logger log = Logger.getLogger(MarketClientController.class.getName());
@@ -261,8 +262,8 @@ public class MarketClientController extends BaseController implements Initializa
 
     private ObservableList<ItemModel> generateItemModels(Collection<Item> items) {
         ObservableList<ItemModel> data = FXCollections.observableArrayList();
-        for (Item it : items) {
-            data.add(new ItemModel(it.getId(), it.getName(), it.getPrice(), it.getCategory(), it.getSeller()));
+        if (items != null) {
+            data.addAll(items.stream().map(it -> new ItemModel(it.getId(), it.getName(), it.getPrice(), it.getCategory(), it.getSeller())).collect(Collectors.toList()));
         }
         return data;
     }
