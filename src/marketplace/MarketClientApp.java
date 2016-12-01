@@ -4,6 +4,7 @@ import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.Marketplace;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ import marketplace.rmi.MarketClientImpl;
 
 import java.io.IOException;
 import java.rmi.Naming;
+import java.rmi.NoSuchObjectException;
 
 public class MarketClientApp extends Application {
     private static final String MAIN_FXML_LOC = "/main.fxml";
@@ -25,12 +27,20 @@ public class MarketClientApp extends Application {
     private Account account;
     private Bank bank;
     private Marketplace marketplace;
+    private BaseController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
         gotoWelcome();
         this.stage.show();
+
+        stage.setOnCloseRequest(e -> {
+            if (controller != null) {
+                    controller.exit();
+            }
+            Platform.exit();
+        });
     }
 
     private void gotoWelcome() {
@@ -103,6 +113,7 @@ public class MarketClientApp extends Application {
         BaseController controller = loader.getController();
         if (controller != null) {
             controller.setApp(this);
+            this.controller = controller;
         }
         return controller;
     }

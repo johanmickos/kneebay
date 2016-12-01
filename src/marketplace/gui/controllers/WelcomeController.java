@@ -65,6 +65,11 @@ public class WelcomeController extends BaseController implements Initializable {
         log.info("Setting app");
     }
 
+    @Override
+    public void exit() {
+        // no-op
+    }
+
     public void appendError(String message) {
         Label warning = new Label(message);
         warnings.getChildren().add(warning);

@@ -31,6 +31,7 @@ import marketplace.security.exceptions.SessionException;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -73,6 +74,19 @@ public class MarketClientController extends BaseController implements Initializa
     public void setApp(Application app) {
         this.app = (MarketClientApp) app;
     }
+
+    @Override
+    public void exit() {
+        try {
+            marketplace.logout(session);
+            UnicastRemoteObject.unexportObject(client, true);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setClient(MarketClientImpl client) {
         this.client = client;
     }
