@@ -108,8 +108,12 @@ public class MarketClientController extends BaseController implements Initializa
         titleCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<ItemModel, String> catCol = new TableColumn<>("Category");
-        catCol.setMinWidth(125);
+        catCol.setMinWidth(7);
         catCol.setCellValueFactory(new PropertyValueFactory<>("category"));
+
+        TableColumn<ItemModel, String> sellerCol = new TableColumn<>("Seller");
+        sellerCol.setMinWidth(75);
+        sellerCol.setCellValueFactory(new PropertyValueFactory<>("seller"));
 
 
         TableColumn actionCol = new TableColumn("Actions");
@@ -148,7 +152,7 @@ public class MarketClientController extends BaseController implements Initializa
                 };
         actionCol.setCellFactory(cellFactory);
 
-        marketplaceTable.getColumns().addAll(priceCol, titleCol, catCol, actionCol);
+        marketplaceTable.getColumns().addAll(priceCol, titleCol, catCol, sellerCol, actionCol);
     }
 
 
