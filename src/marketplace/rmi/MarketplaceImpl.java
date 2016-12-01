@@ -9,7 +9,9 @@ import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.database.models.ItemModel;
 import marketplace.database.models.ItemStatus;
-import marketplace.repositories.*;
+import marketplace.repositories.ClientRepository;
+import marketplace.repositories.ItemRepository;
+import marketplace.repositories.UserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.security.SessionManagement;
 import marketplace.security.exceptions.SessionException;
@@ -55,6 +57,11 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         this.marketClientService = new MarketClientService(new ClientRepository());
         this.itemService = new ItemService(new ItemRepository());
         this.sessionManagement = new SessionManagement();
+        try {
+            testJPA();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void testJPA()
@@ -73,6 +80,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
             itemModel.setName("item test");
             itemModel.setPrice(100);
             itemModel.setStatus(ItemStatus.IN_AUCTION);
+            em.persist(itemModel);
 
         } finally
         {
