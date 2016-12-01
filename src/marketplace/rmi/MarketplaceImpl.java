@@ -1,6 +1,5 @@
 package marketplace.rmi;
 
-import com.sun.tools.corba.se.idl.constExpr.Not;
 import common.Item;
 import common.ItemWish;
 import common.User;
