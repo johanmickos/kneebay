@@ -1,11 +1,26 @@
 package marketplace.database.models;
 
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.util.Collection;
+@NamedQueries({
+        @NamedQuery(
+                name = "findUserWithUsername",
+                query = "SELECT usr FROM UserModel usr WHERE usr.username LIKE :userName",
+                lockMode = LockModeType.OPTIMISTIC
+        ),
+        @NamedQuery(
+                name = "deleteUserWithUsername",
+                query = "DELETE FROM UserModel usr WHERE usr.username LIKE :userName",
+                lockMode = LockModeType.OPTIMISTIC
+        ),
+        @NamedQuery(
+                name = "getAllUsers",
+                query = "SELECT u FROM UserModel u"
+        )
+})
 
 @Entity
+@Table(name = "userTable")
 public class UserModel {
     @Id
     private String id;

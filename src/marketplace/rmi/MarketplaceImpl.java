@@ -9,9 +9,7 @@ import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.database.models.ItemModel;
 import marketplace.database.models.ItemStatus;
-import marketplace.repositories.ClientRepository;
-import marketplace.repositories.ItemRepository;
-import marketplace.repositories.UserRepository;
+import marketplace.repositories.*;
 import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.security.SessionManagement;
 import marketplace.security.exceptions.SessionException;
@@ -50,54 +48,13 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     public MarketplaceImpl() throws RemoteException, NotBoundException, MalformedURLException
     {
         super();
-        emFactory = Persistence.createEntityManagerFactory("marketplace");
-        bank = (Bank) Naming.lookup(bankname);
+        this.emFactory = Persistence.createEntityManagerFactory("marketplace");
+        this.bank = (Bank) Naming.lookup(bankname);
+
         this.sessionManagement = new SessionManagement();
-        this.userService = new UserService(new UserRepository(), sessionManagement);
+        this.userService = new UserService(new JPAUserRepository(this.emFactory), this.sessionManagement);
         this.marketClientService = new MarketClientService(new ClientRepository());
-        this.itemService = new ItemService(new ItemRepository());
-        try {
-            testJPA();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void testJPA()
-    {
-        EntityManager em = null;
-        try
-        {
-            em = beginTransaction();
-
-
-
-            ItemModel itemModel = new ItemModel();
-            itemModel.setId("10");
-            itemModel.setBuyer("buyer");
-            itemModel.setSeller("seller");
-            itemModel.setName("item test");
-            itemModel.setPrice(100);
-            itemModel.setStatus(ItemStatus.IN_AUCTION);
-            em.persist(itemModel);
-
-        } finally
-        {
-            commitTransaction(em);
-        }
-    }
-
-    private EntityManager beginTransaction()
-    {
-        EntityManager em = emFactory.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        return em;
-    }
-
-    private void commitTransaction(EntityManager em)
-    {
-        em.getTransaction().commit();
+        this.itemService = new ItemService(new JPAItemRepository(this.emFactory));
     }
 
     @Override
@@ -106,10 +63,6 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         try
         {
             log.info("Registering user: " + username);
-
-            //test
-            testJPA();
-
             this.userService.register(username, password, account, bank);
             // TODO : let client know of succesful registration?
         }
@@ -117,7 +70,6 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         {
             client.onException(ex);
         }
-
     }
 
     @Override
@@ -242,27 +194,6 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         {
             throw new SessionException("Invalid session");
         }
-
-        /*
-        User user;
-        MarketClient userClient = null;
-
-        try
-        {
-            user = this.userService.getUser(username);
-            userClient = this.marketClientService.getClient(username);
-
-            user.removeWish(wish);
-            this.userService.updateUser(user);
-        }
-        catch (Exception ex)
-        {
-            if(userClient != null)
-            {
-                userClient.onException(ex);
-            }
-        }
-        */
     }
 
     @Override
@@ -297,7 +228,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
 
                     buyerClient.onItemPurchased(item);
                     sellerClient.onItemSold(item);
-                    this.itemService.removeItem(item);
+                    this.itemService.markItemAsBought(item);
 
                     updateMarketplaceForAllClients();
                 }

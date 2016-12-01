@@ -12,12 +12,12 @@ public class UserRepository implements IUserRepository
     public UserRepository()
     {}
 
-    public boolean addUser(String username, String password, Account account)
+    public boolean addUser(String username, String password, Account account, Integer numItemsBought, Integer numItemsSold)
     {
         if (!isUserUniqueByName(username))
             return false;
 
-        User user = new User(username, password, account);
+        User user = new User(username, password, account, numItemsBought, numItemsSold);
         mockDB.users.add(user);
 
         return true;

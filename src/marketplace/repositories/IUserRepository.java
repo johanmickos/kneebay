@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IUserRepository
 {
-    boolean addUser(String username, String password, Account account);
+    boolean addUser(String username, String password, Account account, Integer numItemsBought, Integer numItemsSold);
     User getUser(String username) throws NotFoundException;
     User getUser(String username, String password) throws NotFoundException;
     void updateUser(User user);

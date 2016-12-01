@@ -9,7 +9,8 @@ import java.util.Collection;
 public class ItemService
 {
     private IItemRepository repository;
-    public ItemService(ItemRepository repository)
+
+    public ItemService(IItemRepository repository)
     {
         this.repository = repository;
     }
@@ -24,8 +25,13 @@ public class ItemService
         this.repository.removeItem(item);
     }
 
+    public void markItemAsBought(Item item)
+    {
+        this.repository.markAsBought(item);
+    }
+
     public Collection<Item> getAllItems()
     {
-        return this.repository.getAllItems();
+        return this.repository.getAllAvailableItems();
     }
 }

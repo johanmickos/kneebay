@@ -15,7 +15,7 @@ public class UserService
     private IUserRepository repository;
     private SessionManagement sessionManagement;
 
-    public UserService(UserRepository repository, SessionManagement sessionManagement)
+    public UserService(IUserRepository repository, SessionManagement sessionManagement)
     {
         this.repository = repository;
         this.sessionManagement = sessionManagement;
@@ -31,7 +31,7 @@ public class UserService
             }
             else
             {
-                boolean addedUser = this.repository.addUser(username, password, account);
+                boolean addedUser = this.repository.addUser(username, password, account, 0, 0);
                 if(!addedUser)
                 {
                     throw new Exception("Account already exists at the marketplace!");

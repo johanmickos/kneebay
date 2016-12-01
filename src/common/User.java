@@ -12,13 +12,17 @@ public class User
     private String password;
     private Account bankAccount;
     private List<ItemWish> wishes;
+    private Integer numItemsSold;
+    private Integer numItemsBought;
 
-    public User(String name, String password, Account bankAccount)
+    public User(String name, String password, Account bankAccount, Integer numItemsBought, Integer numItemsSold)
     {
         this.name = name;
         this.password = password;
         this.bankAccount = bankAccount;
         this.wishes = new ArrayList<>();
+        this.numItemsBought = numItemsBought;
+        this.numItemsSold = numItemsSold;
     }
 
     public String getName()
@@ -64,5 +68,25 @@ public class User
     public List<ItemWish> getWishes()
     {
         return wishes;
+    }
+
+    public Integer getNumItemsSold()
+    {
+        return numItemsSold;
+    }
+
+    public void setNumItemsSold(Integer numItemsSold)
+    {
+        this.numItemsSold = numItemsSold;
+    }
+
+    public Integer getNumItemsBought()
+    {
+        return numItemsBought;
+    }
+
+    public void setNumItemsBought(Integer numItemsBought)
+    {
+        this.numItemsBought = numItemsBought;
     }
 }

@@ -21,12 +21,12 @@ public class ItemRepository implements IItemRepository
         mockDB.items.removeIf(i -> i.getId().equals(item.getId()));
     }
 
-    public Collection<Item> getAllItems()
+    public Collection<Item> getAllAvailableItems()
     {
         return mockDB.items;
     }
 
-    public void buyItem(Item item)
+    public void markAsBought(Item item)
     {
 
     }
