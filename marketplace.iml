@@ -7,7 +7,7 @@
         <setting name="provider-name" value="EclipseLink" />
         <datasource-mapping>
           <factory-entry name="bank" />
-          <factory-entry name="marketplace" />
+          <factory-entry name="marketplace" value="7662cbec-3247-408c-888c-c6606933b4e9" />
         </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/resources/META-INF/persistence.xml" />
       </configuration>
@@ -22,7 +22,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Java EE 6-Java EE 6" level="project" />
-    <orderEntry type="library" name="eclipselink-2.3.0" level="project" />
     <orderEntry type="library" name="h2-1.4.193" level="project" />
+    <orderEntry type="library" name="eclipselink-2.3.0" level="project" />
   </component>
 </module>
