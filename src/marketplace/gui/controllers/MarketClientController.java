@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -344,6 +345,17 @@ public class MarketClientController extends BaseController implements Initializa
     }
 
     public void onFetchActivity(ActionEvent actionEvent) {
-        // TODO
+        try {
+            String activity = marketplace.getActivity(session);
+
+            System.out.println("ACTIVITY: " + activity);
+            this.logArea.appendText(activity);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (SessionException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

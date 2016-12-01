@@ -60,9 +60,7 @@ public class UserService
     public void unregister(String session)
     {
         this.sessionManagement.logout(session);
-
-        //TODO
-        //this.repository.removeUser(username);
+        this.repository.removeUser(session);
     }
 
     public void updateUser(User user)
@@ -84,6 +82,5 @@ public class UserService
     {
         return this.repository.getUsers();
     }
-
 
 }

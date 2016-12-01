@@ -259,20 +259,21 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     {
         // For each user, the server (marketplace) keeps a record of user's activities:
         // the total number of items the user has bought and the total number of items the user has sold.
-        //TODO decide on how we want to return the users activity record
 
         if(this.sessionManagement.isValidSession(session))
         {
             User user = this.userService.getUser(session);
-            //this.userService.getActivity(user.getName());
-            // or this.user.getNumberOfItemsBought..
+
+            return "Total number of items bought: "
+                    + user.getNumItemsBought()
+                    + "\n"
+                    + "Total number of items sold: "
+                    + user.getNumItemsSold();
         }
         else
         {
             throw new SessionException("Invalid session");
         }
-
-        return "Total number of items bought: 10. Total number of items sold: 4";
     }
 
     private void updateMarketplaceForAllClients() throws RemoteException
