@@ -1,7 +1,6 @@
 package common.rmi.interfaces;
 
 import common.Item;
-import common.ItemWish;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

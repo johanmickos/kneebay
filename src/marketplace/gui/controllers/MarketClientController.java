@@ -1,11 +1,11 @@
-package marketplace;
+package marketplace.gui.controllers;
 
-import bank.RejectedException;
 import common.Item;
 import common.ItemWish;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.Marketplace;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,26 +21,23 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import marketplace.BaseController;
+import marketplace.MarketClientApp;
 import marketplace.gui.models.ItemModel;
 import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.rmi.MarketClientImpl;
 import marketplace.security.exceptions.SessionException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-public class MarketClientController implements Initializable {
+public class MarketClientController extends BaseController implements Initializable {
     private static final Logger log = Logger.getLogger(MarketClientController.class.getName());
 
-    @FXML public ToggleButton registerButton;
-    @FXML public TextField usernameField;
     @FXML public Label fundsLabel;
     @FXML public Label marketplaceLabel;
     @FXML public TextArea logArea;
@@ -54,6 +51,8 @@ public class MarketClientController implements Initializable {
     private Account account;
     private Bank bank;
     private Marketplace marketplace;
+    private String session;
+
 
     private String marketplaceName = Marketplace.DEFAULT_MARKETPLACE;
     private String bankName = Bank.DEFAULT_BANK;
@@ -61,11 +60,27 @@ public class MarketClientController implements Initializable {
 
     private static final String DISCONNECT_STR = "Disconnect";
     private static final String REGISTER_STR = "\u2007Register\u2007";
+    private MarketClientApp app;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        registerButton.setText(REGISTER_STR);
+        log.info("Init!!");
         initializeMarketplaceTable();
+    }
+
+    @Override
+    public void setApp(Application app) {
+        this.app = (MarketClientApp) app;
+    }
+    public void setClient(MarketClientImpl client) {
+        this.client = client;
+    }
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     private void initializeMarketplaceTable() {
@@ -127,7 +142,7 @@ public class MarketClientController implements Initializable {
         log.info("Buying item " + itemModel.getName() + " for " + username);
         try {
             Item clone = itemModel.generateItem();
-            marketplace.buyItem(clone, username);
+            marketplace.buyItem(clone, session);
         } catch (RemoteException e) {
             e.printStackTrace();
             log.severe("Could not purchase item " + itemModel.getName());
@@ -140,7 +155,7 @@ public class MarketClientController implements Initializable {
     private void handleRemoveItem(ItemModel itemModel) {
         try {
             Item clone = itemModel.generateItem();
-            marketplace.removeItem(clone, username);
+            marketplace.removeItem(clone, session);
         } catch (RemoteException e) {
             e.printStackTrace();
             logArea.appendText("Could not remove the item " + itemModel.getName() + "\n");
@@ -151,55 +166,6 @@ public class MarketClientController implements Initializable {
         }
     }
 
-    public void onRegisterUser(ActionEvent actionEvent) {
-        String username = usernameField.getText();
-
-        log.info("Handling user registration for " + username);
-        try {
-            client = new MarketClientImpl(username, this);
-            this.username = username;
-            bank = (Bank) Naming.lookup(bankName);
-            try {
-                log.info("Trying to create account");
-                account = bank.newAccount(username);
-                account.deposit(INITIAL_FUNDS);
-            } catch (RejectedException rEx) {
-                log.info("Getting account");
-                account = bank.getAccount(username);
-            }
-            marketplace = (Marketplace) Naming.lookup(marketplaceName);
-            marketplace.register(username, null, account, client);
-
-
-            updateAvailableFunds();
-            usernameField.setEditable(false);
-            registerButton.setText(DISCONNECT_STR);
-            marketplaceLabel.setText("Marketplace: " + marketplaceName);
-
-            // TODO Handle accordingly
-        } catch (RemoteException | MalformedURLException | NotBoundException e) {
-            e.printStackTrace();
-            registerButton.setText(REGISTER_STR);
-            registerButton.setSelected(false);
-        }
-    }
-
-    public void onUnregisterUser(ActionEvent actionEvent) {
-        registerButton.setText(REGISTER_STR);
-        usernameField.setEditable(true);
-        marketplaceLabel.setText("Marketplace");
-        fundsLabel.setText("$0.00");
-        marketplaceTable.getItems().clear();
-        try {
-            marketplace.unregister(username);
-        } catch (RemoteException e) {
-            // TODO Show exception
-            e.printStackTrace();
-            logArea.appendText("ERR: Could not unregister from marketplace\n");
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void onNewWish(ActionEvent actionEvent) throws IOException {
         Stage stage = new Stage();
@@ -221,7 +187,7 @@ public class MarketClientController implements Initializable {
             Item.Category cat = (Item.Category) categoryChoice.getValue();
             ItemWish wish = new ItemWish(cat, price);
             try {
-                marketplace.addWish(wish, username);
+                marketplace.addWish(wish, session);
                 wishList.getItems().add(wish.displayString());
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -274,14 +240,6 @@ public class MarketClientController implements Initializable {
 
     }
 
-    public void onToggleRegistration(ActionEvent actionEvent) {
-        if (registerButton.isSelected()) {
-            onRegisterUser(null);
-        } else {
-            onUnregisterUser(null);
-        }
-    }
-
     private ObservableList<ItemModel> generateItemModels(Collection<Item> items) {
         ObservableList<ItemModel> data = FXCollections.observableArrayList();
         for (Item it : items) {
@@ -315,7 +273,6 @@ public class MarketClientController implements Initializable {
         logArea.appendText("Purchased item '" + item.getName() + "' for " + item.getPrice() + "\n");
         updateAvailableFunds();
 
-
         Platform.runLater(() -> wishList.getItems().removeIf(o -> {
             String str = o.toString();
             float max = Float.valueOf(str.substring(str.indexOf("(max: ")+5,str.indexOf(")")));
@@ -335,5 +292,36 @@ public class MarketClientController implements Initializable {
 
     public void onException(String data) {
 
+    }
+
+    public void setMarketplace(Marketplace marketplace) {
+        this.marketplace = marketplace;
+    }
+
+    public void onLogout(ActionEvent actionEvent) {
+        try {
+            marketplace.logout(session);
+            app.onLogout();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRmiFields(String username, MarketClientImpl client, Account account, String session, Marketplace marketplace, Bank bank) {
+        this.client = client;
+        this.account = account;
+        this.username = username;
+        this.session = session;
+        this.marketplace = marketplace;
+        log.info("New sess: "  + session);
+        this.bank = bank;
+    }
+
+    public void onFetchActivity(ActionEvent actionEvent) {
+        // TODO
     }
 }
