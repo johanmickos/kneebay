@@ -7,9 +7,9 @@ import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
-import marketplace.database.models.ItemModel;
-import marketplace.database.models.ItemStatus;
-import marketplace.repositories.*;
+import marketplace.repositories.ClientRepository;
+import marketplace.repositories.JPAItemRepository;
+import marketplace.repositories.JPAUserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.security.SessionManagement;
 import marketplace.security.exceptions.SessionException;
@@ -17,9 +17,7 @@ import marketplace.services.ItemService;
 import marketplace.services.MarketClientService;
 import marketplace.services.UserService;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -217,10 +215,12 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
                 buyer = this.userService.getUser(session);
                 buyerClient = this.marketClientService.getClient(buyer.getName());
 
-                if(buyer.getBankAccount().getBalance() >= itemPrice)
+                Account buyerAccount = bank.getAccount(buyer.getName());
+                Account sellerAccount = bank.getAccount(seller.getName());
+                if(buyerAccount.getBalance() >= itemPrice)
                 {
-                    buyer.getBankAccount().withdraw(itemPrice);
-                    seller.getBankAccount().deposit(itemPrice);
+                    buyerAccount.withdraw(itemPrice);
+                    sellerAccount.deposit(itemPrice);
 
                     //TODO
                     //seller.numberOfItemsSold++;

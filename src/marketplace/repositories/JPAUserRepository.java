@@ -1,6 +1,5 @@
 package marketplace.repositories;
 
-import common.Item;
 import common.User;
 import common.rmi.interfaces.Account;
 import marketplace.database.models.UserModel;
@@ -10,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JPAUserRepository implements IUserRepository
@@ -152,8 +152,8 @@ public class JPAUserRepository implements IUserRepository
     public List<User> getUsers()
     {
         EntityManager em = emFactory.createEntityManager();
-        List<User> users = null;
-        List<UserModel> userModels = em.createNamedQuery("getAllAvailableItems").getResultList();
+        List<User> users = new ArrayList<>();
+        List<UserModel> userModels = em.createNamedQuery("getAllUsers").getResultList();
 
         for (UserModel userModel : userModels)
         {
