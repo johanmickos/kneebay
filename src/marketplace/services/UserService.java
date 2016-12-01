@@ -15,10 +15,10 @@ public class UserService
     private IUserRepository repository;
     private SessionManagement sessionManagement;
 
-    public UserService(UserRepository repository)
+    public UserService(UserRepository repository, SessionManagement sessionManagement)
     {
         this.repository = repository;
-        sessionManagement = new SessionManagement();
+        this.sessionManagement = sessionManagement;
     }
 
     public void register(String username, String password, Account account, Bank bank) throws Exception

@@ -52,11 +52,10 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         super();
         emFactory = Persistence.createEntityManagerFactory("marketplace");
         bank = (Bank) Naming.lookup(bankname);
-
-        this.userService = new UserService(new UserRepository());
+        this.sessionManagement = new SessionManagement();
+        this.userService = new UserService(new UserRepository(), sessionManagement);
         this.marketClientService = new MarketClientService(new ClientRepository());
         this.itemService = new ItemService(new ItemRepository());
-        this.sessionManagement = new SessionManagement();
         try {
             testJPA();
         } catch (Exception ex) {
