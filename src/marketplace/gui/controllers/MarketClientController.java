@@ -318,10 +318,10 @@ public class MarketClientController extends BaseController implements Initializa
         this.username = username;
         this.session = session;
         this.marketplace = marketplace;
-        log.info("New sess: "  + session);
         this.bank = bank;
 
         usernameLabel.setText(username);
+        updateAvailableFunds();
     }
 
     public void onFetchActivity(ActionEvent actionEvent) {
