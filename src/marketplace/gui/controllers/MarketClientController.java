@@ -43,6 +43,7 @@ public class MarketClientController extends BaseController implements Initializa
     @FXML public TextArea logArea;
     @FXML public TableView marketplaceTable;
     @FXML public ListView wishList;
+    @FXML public Label usernameLabel;
 
     public static final int INITIAL_FUNDS = 1000;
 
@@ -319,6 +320,8 @@ public class MarketClientController extends BaseController implements Initializa
         this.marketplace = marketplace;
         log.info("New sess: "  + session);
         this.bank = bank;
+
+        usernameLabel.setText(username);
     }
 
     public void onFetchActivity(ActionEvent actionEvent) {

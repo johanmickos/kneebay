@@ -1,6 +1,5 @@
 package marketplace;
 
-import bank.RejectedException;
 import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.Marketplace;
@@ -10,12 +9,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import marketplace.gui.controllers.MarketClientController;
-import marketplace.repositories.exceptions.NotFoundException;
+import marketplace.gui.controllers.WelcomeController;
 import marketplace.rmi.MarketClientImpl;
 
 import java.io.IOException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 
 public class MarketClientApp extends Application {
     private static final String MAIN_FXML_LOC = "/main.fxml";
@@ -47,27 +45,42 @@ public class MarketClientApp extends Application {
         launch(args);
     }
 
-    public void onLogin(String username, String password) throws IOException, NotBoundException, NotFoundException {
-        MarketClientController controller = (MarketClientController) replaceSceneContent(MAIN_FXML_LOC);
-        client = new MarketClientImpl(username);
-        client.setController(controller);
-        bank = (Bank) Naming.lookup(Bank.DEFAULT_BANK);
+    public void onLogin(String username, String password) throws IOException {
         try {
-            bank.newAccount(username);
-        } catch (RejectedException e) {
-            e.printStackTrace();
-        }
-        account = bank.getAccount(username);
-        marketplace = (Marketplace) Naming.lookup(Marketplace.DEFAULT_MARKETPLACE);
-        marketplace.register(username, password, account, client);
-        String session = marketplace.login(username, password, client);
-        if (controller != null) {
-            controller.updateRmiFields(username, client, account, session, marketplace, bank);
+            MarketClientController controller = (MarketClientController) replaceSceneContent(MAIN_FXML_LOC);
+            client = new MarketClientImpl(username);
+            client.setController(controller);
+            bank = (Bank) Naming.lookup(Bank.DEFAULT_BANK);
+            account = bank.getAccount(username);
+            marketplace = (Marketplace) Naming.lookup(Marketplace.DEFAULT_MARKETPLACE);
+            String session = marketplace.login(username, password, client);
+            if (controller != null) {
+                controller.updateRmiFields(username, client, account, session, marketplace, bank);
+            }
+        } catch (Exception ex) {
+            WelcomeController controller = (WelcomeController) replaceSceneContent(WELCOME_FXLM_LOC);
+            controller.appendError(ex.getMessage());
         }
     }
 
-    public void onRegister(String username, String password) {
-
+    public void onRegister(String username, String password) throws IOException {
+        try {
+            MarketClientController controller = (MarketClientController) replaceSceneContent(MAIN_FXML_LOC);
+            client = new MarketClientImpl(username);
+            client.setController(controller);
+            bank = (Bank) Naming.lookup(Bank.DEFAULT_BANK);
+            account = bank.newAccount(username);
+            account.deposit(1000);
+            marketplace = (Marketplace) Naming.lookup(Marketplace.DEFAULT_MARKETPLACE);
+            marketplace.register(username, password, account, client);
+            String session = marketplace.login(username, password, client);
+            if (controller != null) {
+                controller.updateRmiFields(username, client, account, session, marketplace, bank);
+            }
+        } catch (Exception ex) {
+            WelcomeController controller = (WelcomeController) replaceSceneContent(WELCOME_FXLM_LOC);
+            controller.appendError(ex.getMessage());
+        }
     }
 
 

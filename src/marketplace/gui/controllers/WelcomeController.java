@@ -10,12 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import marketplace.BaseController;
 import marketplace.MarketClientApp;
-import marketplace.repositories.exceptions.NotFoundException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -38,19 +36,20 @@ public class WelcomeController extends BaseController implements Initializable {
             String password = passwordField.getText();
             try {
                 app.onLogin(username, password);
-            } catch (RemoteException e) {
+            } catch (RemoteException | MalformedURLException e) {
                 e.printStackTrace();
                 Label warning = new Label(e.getMessage());
                 warnings.getChildren().add(warning);
-            } catch (NotBoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
-                Label warning = new Label(e.getMessage());
-                warnings.getChildren().add(warning);
-            } catch (NotFoundException e) {
-                e.printStackTrace();
-                Label warning = new Label(e.getMessage());
-                warnings.getChildren().add(warning);
-            } catch (MalformedURLException e) {
+            }
+        }));
+        registerButton.setOnAction((event -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            try {
+                app.onRegister(username, password);
+            } catch (RemoteException | MalformedURLException e) {
                 e.printStackTrace();
                 Label warning = new Label(e.getMessage());
                 warnings.getChildren().add(warning);
@@ -64,5 +63,10 @@ public class WelcomeController extends BaseController implements Initializable {
     public void setApp(Application app) {
         this.app = (MarketClientApp) app;
         log.info("Setting app");
+    }
+
+    public void appendError(String message) {
+        Label warning = new Label(message);
+        warnings.getChildren().add(warning);
     }
 }
