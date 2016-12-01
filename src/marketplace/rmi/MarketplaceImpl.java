@@ -8,6 +8,8 @@ import common.rmi.interfaces.Account;
 import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
+import marketplace.database.models.ItemModel;
+import marketplace.database.models.ItemStatus;
 import marketplace.repositories.*;
 import marketplace.repositories.exceptions.NotFoundException;
 import marketplace.security.SessionManagement;
@@ -16,6 +18,10 @@ import marketplace.services.ItemService;
 import marketplace.services.MarketClientService;
 import marketplace.services.UserService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -38,9 +44,12 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
 
     private SessionManagement sessionManagement;
 
+    private EntityManagerFactory emFactory;
+
     public MarketplaceImpl() throws RemoteException, NotBoundException, MalformedURLException
     {
         super();
+        emFactory = Persistence.createEntityManagerFactory("marketplace");
         bank = (Bank) Naming.lookup(bankname);
 
         this.userService = new UserService(new UserRepository());
@@ -49,12 +58,52 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         this.sessionManagement = new SessionManagement();
     }
 
+    private void testJPA()
+    {
+        EntityManager em = null;
+        try
+        {
+            em = beginTransaction();
+
+
+
+            ItemModel itemModel = new ItemModel();
+            itemModel.setId("10");
+            itemModel.setBuyer("buyer");
+            itemModel.setSeller("seller");
+            itemModel.setName("item test");
+            itemModel.setPrice(100);
+            itemModel.setStatus(ItemStatus.IN_AUCTION);
+
+        } finally
+        {
+            commitTransaction(em);
+        }
+    }
+
+    private EntityManager beginTransaction()
+    {
+        EntityManager em = emFactory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        return em;
+    }
+
+    private void commitTransaction(EntityManager em)
+    {
+        em.getTransaction().commit();
+    }
+
     @Override
     public synchronized void register(String username, String password, Account account, MarketClient client) throws RemoteException
     {
         try
         {
             log.info("Registering user: " + username);
+
+            //test
+            testJPA();
+
             this.userService.register(username, password, account, bank);
             // TODO : let client know of succesful registration?
         }

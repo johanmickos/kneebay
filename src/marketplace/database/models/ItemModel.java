@@ -2,8 +2,10 @@ package marketplace.database.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="itemTable")
 public class ItemModel {
     @Id
     private String id;

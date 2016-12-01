@@ -10,6 +10,8 @@ public class Item implements Serializable{
     private Category category;
     private String seller;
 
+    //buyer field
+
     public String getId() {
         return id;
     }
