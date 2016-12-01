@@ -252,8 +252,9 @@ public class MarketClientController extends BaseController implements Initializa
             } catch (RemoteException e) {
                 e.printStackTrace();
                 logArea.appendText("ERR: Could not create the new item '" + newItem.getName() + "'\n");
+            } finally {
+                stage.close();
             }
-            stage.close();
         });
 
         stage.show();
