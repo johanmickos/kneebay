@@ -222,9 +222,10 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
                     buyerAccount.withdraw(itemPrice);
                     sellerAccount.deposit(itemPrice);
 
-                    //TODO
-                    //seller.numberOfItemsSold++;
-                    //buyer.numberOfItemsBought++;
+                    seller.setNumItemsSold(seller.getNumItemsSold() + 1);
+                    this.userService.updateUser(seller);
+                    buyer.setNumItemsBought(buyer.getNumItemsBought() + 1);
+                    this.userService.updateUser(buyer);
 
                     buyerClient.onItemPurchased(item);
                     sellerClient.onItemSold(item);
