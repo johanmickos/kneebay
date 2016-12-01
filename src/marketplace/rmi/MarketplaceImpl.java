@@ -145,8 +145,8 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     @Override
     public void logout(String session) throws RemoteException, NotFoundException
     {
-        this.userService.logout(session);
         this.marketClientService.removeMarketClientFromUser(this.userService.getUser(session).getName());
+        this.userService.logout(session);
     }
 
     @Override
@@ -280,7 +280,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
             {
                 float itemPrice = item.getPrice();
 
-                seller = this.userService.getUser(item.getSeller());
+                seller = this.userService.getUserByUsername(item.getSeller());
                 sellerClient = this.marketClientService.getClient(item.getSeller());
 
                 buyer = this.userService.getUser(session);

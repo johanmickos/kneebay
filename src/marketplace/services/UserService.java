@@ -76,6 +76,9 @@ public class UserService
 
         return this.repository.getUser(username);
     }
+    public User getUserByUsername(String username) throws NotFoundException {
+        return repository.getUser(username);
+    }
 
     public List<User> getUsers()
     {

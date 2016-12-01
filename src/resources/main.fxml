@@ -9,6 +9,7 @@
             fx:controller="marketplace.gui.controllers.MarketClientController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <Label fx:id="usernameLabel"/>
             <Button mnemonicParsing="false" styleClass="wide-btn" text="Logout" onAction="#onLogout"/>
             <Button mnemonicParsing="false" onAction="#onNewItem" text="New Item"/>
             <Button mnemonicParsing="false" onAction="#onNewWish" text="New Wish"/>
