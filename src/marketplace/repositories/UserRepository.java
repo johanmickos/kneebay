@@ -49,8 +49,16 @@ public class UserRepository implements IUserRepository
 
     public User getUser(String username, String password) throws NotFoundException
     {
-        // not implemented for mock
-        return null;
+        for (User user : mockDB.users) {
+            if (user.getName().equals(username)) {
+                if (user.getPassword().equals(password)) {
+                    return user;
+                } else {
+                    throw new NotFoundException("Invalid credentials");
+                }
+            }
+        }
+        throw new NotFoundException("User not found");
     }
 
     public void updateUser(User user)
