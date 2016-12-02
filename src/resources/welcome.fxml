@@ -39,7 +39,6 @@
                 <Insets right="125.0"/>
             </padding>
             <VBox alignment="TOP_CENTER" prefHeight="177.0" prefWidth="220.0" fx:id="warnings">
-                <Label text="Warning!"/>
             </VBox>
             <Button mnemonicParsing="false" text="Login" fx:id="loginButton"/>
             <Button mnemonicParsing="false" text="Register" fx:id="registerButton"/>
