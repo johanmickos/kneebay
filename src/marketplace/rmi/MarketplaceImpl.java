@@ -11,6 +11,7 @@ import marketplace.repositories.ClientRepository;
 import marketplace.repositories.JPAItemRepository;
 import marketplace.repositories.JPAUserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
+import marketplace.repositories.exceptions.RegistrationException;
 import marketplace.security.SessionManagement;
 import marketplace.security.exceptions.SessionException;
 import marketplace.services.ItemService;
@@ -56,13 +57,17 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     }
 
     @Override
-    public synchronized void register(String username, String password, Account account, MarketClient client) throws RemoteException
+    public synchronized void register(String username, String password, Account account, MarketClient client)
+            throws RemoteException, RegistrationException
     {
         try
         {
             log.info("Registering user: " + username);
             this.userService.register(username, password, account, bank);
-            // TODO : let client know of succesful registration?
+        }
+        catch (RegistrationException rEx)
+        {
+            throw rEx;
         }
         catch (Exception ex)
         {

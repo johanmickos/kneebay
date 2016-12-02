@@ -6,6 +6,7 @@ import common.rmi.interfaces.Bank;
 import marketplace.repositories.IUserRepository;
 import marketplace.repositories.UserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
+import marketplace.repositories.exceptions.RegistrationException;
 import marketplace.security.SessionManagement;
 
 import java.util.List;
@@ -27,20 +28,20 @@ public class UserService
         {
             if(password.length() < 8)
             {
-                throw new Exception("password must be at least eight characters");
+                throw new RegistrationException("Password must be at least 8 chars");
             }
             else
             {
                 boolean addedUser = this.repository.addUser(username, password, account, 0, 0);
                 if(!addedUser)
                 {
-                    throw new Exception("Account already exists at the marketplace!");
+                    throw new RegistrationException("Account already exists at market!");
                 }
             }
         }
         else
         {
-            throw new Exception("Account does not exist at bank!");
+            throw new RegistrationException("Account does not exist at bank!");
         }
     }
 
