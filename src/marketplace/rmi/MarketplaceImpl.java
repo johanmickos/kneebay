@@ -8,6 +8,7 @@ import common.rmi.interfaces.Bank;
 import common.rmi.interfaces.MarketClient;
 import common.rmi.interfaces.Marketplace;
 import marketplace.repositories.ClientRepository;
+import marketplace.repositories.ItemWishRepository;
 import marketplace.repositories.JPAItemRepository;
 import marketplace.repositories.JPAUserRepository;
 import marketplace.repositories.exceptions.NotFoundException;
@@ -15,6 +16,7 @@ import marketplace.repositories.exceptions.RegistrationException;
 import marketplace.security.SessionManagement;
 import marketplace.security.exceptions.SessionException;
 import marketplace.services.ItemService;
+import marketplace.services.ItemWishService;
 import marketplace.services.MarketClientService;
 import marketplace.services.UserService;
 
@@ -28,6 +30,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace {
@@ -39,6 +42,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
     private UserService userService;
     private MarketClientService marketClientService;
     private ItemService itemService;
+    private ItemWishService itemWishService;
 
     private SessionManagement sessionManagement;
 
@@ -52,8 +56,9 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
 
         this.sessionManagement = new SessionManagement();
         this.userService = new UserService(new JPAUserRepository(this.emFactory), this.sessionManagement);
-        this.marketClientService = new MarketClientService(new ClientRepository());
         this.itemService = new ItemService(new JPAItemRepository(this.emFactory));
+        this.marketClientService = new MarketClientService(new ClientRepository());
+        this.itemWishService = new ItemWishService(new ItemWishRepository());
     }
 
     @Override
@@ -110,20 +115,14 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
         this.itemService.addItem(item);
         updateMarketplaceForAllClients();
 
-        // TODO : change this to table of wishes, that can be looked up by type and user
-        List<User> users = this.userService.getUsers();
-        for (User user : users)
+        Set<User> wishers = this.itemWishService.getAllUsersWishingForItem(item.getCategory(), item.getPrice());
+
+        for (User user : wishers)
         {
             try
             {
                 MarketClient userClient = this.marketClientService.getClient(user.getName());
-                for (ItemWish wish : user.getWishes())
-                {
-                    if(wish.getType().equals(item.getCategory()) && wish.getMaxAmount() >= item.getPrice())
-                    {
-                        userClient.onWishNotify(item);
-                    }
-                }
+                userClient.onWishNotify(item);
             }
             catch (NotFoundException ex)
             {
@@ -176,6 +175,8 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
             User user = this.userService.getUser(session);
             user.addWish(wish);
             this.userService.updateUser(user);
+            wish.setWisher(user);
+            this.itemWishService.addWish(wish);
         }
         else
         {
@@ -192,6 +193,7 @@ public class MarketplaceImpl extends UnicastRemoteObject implements Marketplace 
             User user = this.userService.getUser(session);
             user.removeWish(wish);
             this.userService.updateUser(user);
+            this.itemWishService.removeWish(wish);
         }
         else
         {

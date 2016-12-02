@@ -6,6 +6,7 @@ public class ItemWish implements Serializable
 {
     private Item.Category type;
     private float maxAmount;
+    private User wisher;
 
     public ItemWish(Item.Category type, float maxAmount)
     {
@@ -35,5 +36,15 @@ public class ItemWish implements Serializable
 
     public String displayString() {
         return type + " (max: " + maxAmount + ")";
+    }
+
+    public User getWisher()
+    {
+        return wisher;
+    }
+
+    public void setWisher(User wisher)
+    {
+        this.wisher = wisher;
     }
 }
